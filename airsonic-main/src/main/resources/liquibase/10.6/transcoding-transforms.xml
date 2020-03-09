@@ -1,0 +1,56 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet id="create-transcoding-transforms" author="anon">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="transcoding_transforms"/>
+            </not>
+        </preConditions>
+        <createTable tableName="transcoding_transforms">
+            <column name="name" type="${varchar_type}" >
+                <constraints primaryKey="true" />
+            </column>
+            <column name="description" type="${varchar_type}">
+                <constraints nullable="false" />
+            </column>
+            <column name="value" type="${varchar_type}">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <rollback>
+            <delete tableName="transcoding_transforms"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="add-default-transcoding-transforms" author="anon">
+        <insert tableName="transcoding_transforms">
+            <column name="name">speed8x</column>
+            <column name="description">Speed (8X)</column>
+            <column name="value">-filter_complex "[0:v]setpts=0.125*PTS[v];[0:a]atempo=2.0,atempo=2.0,atempo=2.0[a]"</column>
+        </insert>
+        <insert tableName="transcoding_transforms">
+            <column name="name">speed2x</column>
+            <column name="description">Speed (2X)</column>
+            <column name="value">-filter_complex "[0:v]setpts=0.5*PTS[v];[0:a]atempo=2.0[a]"</column>
+        </insert>
+        <insert tableName="transcoding_transforms">
+            <column name="name">speed1.5x</column>
+            <column name="description">Speed (1.5X)</column>
+            <column name="value">-filter_complex "[0:v]setpts=(2.0/3)*PTS[v];[0:a]atempo=1.5[a]"</column>
+        </insert>
+        <insert tableName="transcoding_transforms">
+            <column name="name">speed1.25x</column>
+            <column name="description">Speed (1.25X)</column>
+            <column name="value">-filter_complex "[0:v]setpts=0.8*PTS[v];[0:a]atempo=1.25[a]"</column>
+        </insert>
+        <insert tableName="transcoding_transforms">
+            <column name="name">speed0.5x</column>
+            <column name="description">Speed (0.5X)</column>
+            <column name="value">-filter_complex "[0:v]setpts=2*PTS[v];[0:a]atempo=0.5[a]"</column>
+        </insert>
+    </changeSet>
+    <changeSet id="add-transcoding-transforms-to-transcoders" author="anon">
+        
+    </changeSet>
+</databaseChangeLog>
