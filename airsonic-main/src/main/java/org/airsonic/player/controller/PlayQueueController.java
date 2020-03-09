@@ -25,6 +25,7 @@ import org.airsonic.player.domain.UserSettings;
 import org.airsonic.player.service.PlayerService;
 import org.airsonic.player.service.SecurityService;
 import org.airsonic.player.service.SettingsService;
+import org.airsonic.player.service.TranscodingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,6 +53,8 @@ public class PlayQueueController {
     private SecurityService securityService;
     @Autowired
     private SettingsService settingsService;
+    @Autowired
+    private TranscodingService transcodingService;
 
     @GetMapping
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -64,10 +67,11 @@ public class PlayQueueController {
         map.put("user", user);
         map.put("player", player);
         map.put("players", playerService.getPlayersForUserAndClientId(user.getUsername(), null));
+        map.put("transforms", transcodingService.getAllTransforms());
         map.put("visibility", userSettings.getPlaylistVisibility());
         map.put("partyMode", userSettings.isPartyModeEnabled());
         map.put("notify", userSettings.isSongNotificationEnabled());
         map.put("autoHide", userSettings.isAutoHidePlayQueue());
-        return new ModelAndView("playQueue","model",map);
+        return new ModelAndView("playQueue", "model", map);
     }
 }

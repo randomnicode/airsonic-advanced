@@ -77,6 +77,10 @@ public class TranscodingService {
         return transcodingDao.getAllTranscodings();
     }
 
+    public List<TranscodingTransform> getAllTransforms() {
+        return transcodingDao.getAllTransforms();
+    }
+
     /**
      * Returns all active transcodings for the given player. Only enabled transcodings are returned.
      *
@@ -300,27 +304,38 @@ public class TranscodingService {
     }
 
     /**
-     * Creates a transcoded input stream by interpreting the given command line string.
-     * This includes the following:
+     * Creates a transcoded input stream by interpreting the given command line
+     * string. This includes the following:
      * <ul>
      * <li>Splitting the command line string to an array.</li>
      * <li>Replacing occurrences of "%s" with the path of the given music file.</li>
-     * <li>Replacing occurrences of "%t" with the title of the given music file.</li>
-     * <li>Replacing occurrences of "%l" with the album name of the given music file.</li>
-     * <li>Replacing occurrences of "%a" with the artist name of the given music file.</li>
-     * <li>Replacing occurrcences of "%b" with the max bitrate.</li>
-     * <li>Replacing occurrcences of "%o" with the video time offset (used for scrubbing).</li>
-     * <li>Replacing occurrcences of "%d" with the video duration (used for HLS).</li>
-     * <li>Replacing occurrcences of "%w" with the video image width.</li>
-     * <li>Replacing occurrcences of "%h" with the video image height.</li>
-     * <li>Prepending the path of the transcoder directory if the transcoder is found there.</li>
+     * <li>Replacing occurrences of "%t" with the title of the given music
+     * file.</li>
+     * <li>Replacing occurrences of "%l" with the album name of the given music
+     * file.</li>
+     * <li>Replacing occurrences of "%a" with the artist name of the given music
+     * file.</li>
+     * <li>Replacing occurrences of "%b" with the max bitrate.</li>
+     * <li>Replacing occurrences of "%f" with the specified transform.</li>
+     * <li>Replacing occurrences of "%o" with the video time offset (used for
+     * scrubbing).</li>
+     * <li>Replacing occurrences of "%d" with the video duration (used for
+     * HLS).</li>
+     * <li>Replacing occurrences of "%w" with the video image width.</li>
+     * <li>Replacing occurrences of "%h" with the video image height.</li>
+     * <li>Prepending the path of the transcoder directory if the transcoder is
+     * found there.</li>
      * </ul>
      *
      * @param command                  The command line string.
-     * @param maxBitRate               The maximum bitrate to use. May not be {@code null}.
-     * @param videoTranscodingSettings Parameters used when transcoding video. May be {@code null}.
+     * @param maxBitRate               The maximum bitrate to use. May not be
+     *                                 {@code null}.
+     * @param videoTranscodingSettings Parameters used when transcoding video. May
+     *                                 be {@code null}.
      * @param mediaFile                The media file.
-     * @param in                       Data to feed to the process.  May be {@code null}.  @return The newly created input stream.
+     * @param in                       Data to feed to the process. May be
+     *                                 {@code null}. @return The newly created input
+     *                                 stream.
      */
     private TranscodeInputStream createTranscodeInputStream(String command, Integer maxBitRate,
                                                             VideoTranscodingSettings videoTranscodingSettings, MediaFile mediaFile, InputStream in) throws IOException {
@@ -579,6 +594,7 @@ public class TranscodingService {
         private final VideoTranscodingSettings videoTranscodingSettings;
         private Integer maxBitRate;
         private Transcoding transcoding;
+        private String transform;
 
         public Parameters(MediaFile mediaFile, VideoTranscodingSettings videoTranscodingSettings) {
             this.mediaFile = mediaFile;
