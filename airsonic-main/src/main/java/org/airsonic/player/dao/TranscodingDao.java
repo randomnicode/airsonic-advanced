@@ -20,6 +20,7 @@
 package org.airsonic.player.dao;
 
 import org.airsonic.player.domain.Transcoding;
+import org.airsonic.player.domain.TranscodingTransform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
@@ -41,7 +42,9 @@ public class TranscodingDao extends AbstractDao {
     private static final Logger LOG = LoggerFactory.getLogger(TranscodingDao.class);
     private static final String INSERT_COLUMNS = "name, source_formats, target_format, step1, step2, step3, default_active";
     private static final String QUERY_COLUMNS = "id, " + INSERT_COLUMNS;
-    private TranscodingRowMapper rowMapper = new TranscodingRowMapper();
+    private static final TranscodingRowMapper rowMapper = new TranscodingRowMapper();
+    private static final String TRANSFORM_COLUMNS = "name, description, value";
+    private static final TranscodingTransformRowMapper transformMapper = new TranscodingTransformRowMapper();
 
     /**
      * Returns all transcodings.
@@ -104,7 +107,7 @@ public class TranscodingDao extends AbstractDao {
     public void deleteTranscoding(Integer id) {
         String sql = "delete from transcoding2 where id=?";
         update(sql, id);
-        LOG.info("Deleted transcoding with ID " + id);
+        LOG.info("Deleted transcoding with ID {}", id);
     }
 
     /**
@@ -120,10 +123,43 @@ public class TranscodingDao extends AbstractDao {
                 transcoding.getStep3(), transcoding.isDefaultActive(), transcoding.getId());
     }
 
+    public List<TranscodingTransform> getAllTransforms() {
+        String sql = "select " + TRANSFORM_COLUMNS + " from trancoding_transforms";
+        return query(sql, transformMapper);
+    }
+
+    public TranscodingTransform getTransform(String name) {
+        String sql = "select " + TRANSFORM_COLUMNS + " from trancoding_transforms where name=?";
+        return queryOne(sql, transformMapper, name);
+    }
+
+    public boolean createTransform(TranscodingTransform transform) {
+        String sql = "insert into transcoding_transforms (" + TRANSFORM_COLUMNS + ") values (" + questionMarks(TRANSFORM_COLUMNS) + ")";
+        return update(sql, transform.getName(), transform.getDescription(), transform.getValue()) == 1;
+    }
+
+    public boolean updateTransform(TranscodingTransform transform) {
+        String sql = "update transcoding_transforms set description=?, value=? where name=?";
+        return update(sql, transform.getDescription(), transform.getValue(), transform.getName()) == 1;
+    }
+
+    public boolean deleteTransform(String name) {
+        String sql = "delete from transcoding_transforms where name=?";
+        return update(sql, name) == 1;
+    }
+
     private static class TranscodingRowMapper implements RowMapper<Transcoding> {
+        @Override
         public Transcoding mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new Transcoding(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
                     rs.getString(6), rs.getString(7), rs.getBoolean(8));
+        }
+    }
+
+    private static class TranscodingTransformRowMapper implements RowMapper<TranscodingTransform> {
+        @Override
+        public TranscodingTransform mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new TranscodingTransform(rs.getString("name"), rs.getString("description"), rs.getString("value"));
         }
     }
 }

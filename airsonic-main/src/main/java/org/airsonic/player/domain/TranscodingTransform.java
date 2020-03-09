@@ -5,6 +5,12 @@ public class TranscodingTransform {
     private String description;
     private String value;
 
+    public TranscodingTransform(String name, String description, String value) {
+        this.name = name;
+        this.description = description;
+        this.value = value;
+    }
+
     public String getName() {
         return name;
     }
