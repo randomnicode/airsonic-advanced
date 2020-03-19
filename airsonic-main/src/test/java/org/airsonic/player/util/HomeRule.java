@@ -19,7 +19,7 @@ public class HomeRule extends ExternalResource {
     protected void before() throws Throwable {
         super.before();
         System.setProperty("airsonic.home", TestCaseUtils.airsonicHomePathForTest());
-        TestCaseUtils.cleanAirsonicHomeForTest();
+        // TestCaseUtils.cleanAirsonicHomeForTest();
         ConfigurationPropertiesService.reset();
     }
 
