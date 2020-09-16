@@ -143,11 +143,11 @@
         </c:forEach>
     </table>
 
-    <div class="forward" style="float:left;padding-right:1.5em">
-        <a href="#" onclick="onSavePlaylist()"><fmt:message key="playlist.save"/></a>
+    <div class="forward-without-glyph" style="float:left;padding-right:1.5em">
+        <a href="#" onclick="onSavePlaylist()"><i class="fas fa-save"></i> <fmt:message key="playlist.save"/></a>
     </div>
-    <div class="forward" style="float: left">
-        <a href="#" onclick="onPlayAll()"><fmt:message key="main.playall"/></a>
+    <div class="forward-without-glyph" style="float: left">
+        <a href="#" onclick="onPlayAll()"><i class="fas fa-play-circle"></i> <fmt:message key="main.playall"/></a>
     </div>
     <div style="clear: both"></div>
 

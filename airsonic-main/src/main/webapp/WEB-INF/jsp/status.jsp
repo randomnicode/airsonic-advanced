@@ -107,6 +107,6 @@
     </tr>
 </table>
 
-<div class="forward"><a href="status.view?"><fmt:message key="common.refresh"/></a></div>
+<div class="forward-without-glyph"><a href="status.view?"><i class="fas fa-sync"></i> <fmt:message key="common.refresh"/></a></div>
 
 </body></html>

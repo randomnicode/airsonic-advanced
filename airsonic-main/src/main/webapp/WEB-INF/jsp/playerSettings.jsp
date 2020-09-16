@@ -72,8 +72,8 @@ $(document).ready(function() {
                 </td>
             </tr>
             <tr>
-                <td style="padding-right:1em"><div class="forward"><a href="${deleteUrl}"><fmt:message key="playersettings.forget"/></a></div></td>
-                <td><div class="forward"><a href="${cloneUrl}"><fmt:message key="playersettings.clone"/></a></div></td>
+                <td style="padding-right:1em"><div class="forward-without-glyph"><a href="${deleteUrl}"><i class="fas fa-trash"></i> <fmt:message key="playersettings.forget"/></a></div></td>
+                <td><div class="forward-without-glyph"><a href="${cloneUrl}"><i class="fas fa-clone"></i> <fmt:message key="playersettings.clone"/></a></div></td>
             </tr>
         </table>
 

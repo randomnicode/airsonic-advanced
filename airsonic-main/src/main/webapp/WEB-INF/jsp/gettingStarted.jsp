@@ -48,6 +48,6 @@
 
 </table>
 
-<div class="forward"><a href="javascript:hideGettingStarted()"><fmt:message key="gettingStarted.hide"/></a></div>
+<div class="forward-without-glyph"><a href="javascript:hideGettingStarted()"><i class="fas fa-minus-circle"></i> <fmt:message key="gettingStarted.hide"/></a></div>
 
 </body></html>

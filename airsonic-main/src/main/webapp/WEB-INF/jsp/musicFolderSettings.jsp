@@ -75,8 +75,8 @@
 
 </table>
 
-    <p class="forward"><a href="userSettings.view"><fmt:message key="musicfoldersettings.access"/></a></p>
-    <p class="detail" style="width:60%;white-space:normal;margin-top:-10px;">
+    <p class="forward-without-glyph"><a href="userSettings.view"><i class="fas fa-user-cog"></i> <fmt:message key="musicfoldersettings.access"/></a></p>
+    <p class="forward-without-glyph detail" style="width:60%;white-space:normal;margin-top:-10px;">
         <fmt:message key="musicfoldersettings.access.description"/>
     </p>
 
@@ -127,7 +127,7 @@
 
     <table>
         <tr>
-            <td><div class="forward"><a href="musicFolderSettings.view?scanNow"><fmt:message key="musicfoldersettings.scannow"/></a></div></td>
+            <td><div class="forward-without-glyph"><a href="musicFolderSettings.view?scanNow"><i class="fas fa-binoculars"></i> <fmt:message key="musicfoldersettings.scannow"/></a></div></td>
             <td><c:import url="helpToolTip.jsp"><c:param name="topic" value="scanMediaFolders"/></c:import></td>
         </tr>
     </table>
@@ -145,7 +145,7 @@
         <fmt:message key="musicfoldersettings.fastcache.description"/>
     </p>
 
-    <p class="forward"><a href="musicFolderSettings.view?expunge"><fmt:message key="musicfoldersettings.expunge"/></a></p>
+    <p class="forward-without-glyph"><a href="musicFolderSettings.view?expunge"><i class="fas fa-bath"></i> <fmt:message key="musicfoldersettings.expunge"/></a></p>
     <p class="detail" style="width:60%;white-space:normal;margin-top:-10px;">
         <fmt:message key="musicfoldersettings.expunge.description"/>
     </p>

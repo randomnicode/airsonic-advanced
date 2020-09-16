@@ -33,7 +33,7 @@
         <div class="back" style="float:left;padding-right:10pt"><a href="${backUrl}"><fmt:message key="common.back"/></a></div>
     </c:if>
     <c:if test="${model.user.settingsRole}">
-        <div class="forward" style="float:left"><a href="shareSettings.view"><fmt:message key="share.manage"/></a></div>
+        <div class="forward-without-glyph" style="float:left"><a href="shareSettings.view"><i class="fas fa-cogs"></i> <fmt:message key="share.manage"/></a></div>
     </c:if>
 </div>
 </body>

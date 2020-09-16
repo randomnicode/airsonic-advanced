@@ -168,12 +168,12 @@
 
 <table style="padding-top:1em"><tr>
     <c:if test="${model.user.podcastRole}">
-        <td style="padding-right:2em"><div class="forward"><a href="javascript:downloadSelected()"><fmt:message key="podcastreceiver.downloadselected"/></a></div></td>
-        <td style="padding-right:2em"><div class="forward"><a href="javascript:deleteSelected()"><fmt:message key="podcastreceiver.deleteselected"/></a></div></td>
+        <td style="padding-right:2em"><div class="forward-without-glyph"><a href="javascript:downloadSelected()"><i class="fas fa-download"></i> <fmt:message key="podcastreceiver.downloadselected"/></a></div></td>
+        <td style="padding-right:2em"><div class="forward-without-glyph"><a href="javascript:deleteSelected()"><i class="fas fa-trash"></i> <fmt:message key="podcastreceiver.deleteselected"/></a></div></td>
     </c:if>
-    <td style="padding-right:2em"><div class="forward"><a href="javascript:refreshPage()"><fmt:message key="podcastreceiver.refresh"/></a></div></td>
+    <td style="padding-right:2em"><div class="forward-without-glyph"><a href="javascript:refreshPage()"><i class="fas fa-sync"></i> <fmt:message key="podcastreceiver.refresh"/></a></div></td>
     <c:if test="${model.user.adminRole}">
-        <td style="padding-right:2em"><div class="forward"><a href="podcastSettings.view?"><fmt:message key="podcastreceiver.settings"/></a></div></td>
+        <td style="padding-right:2em"><div class="forward-without-glyph"><a href="podcastSettings.view?"><i class="fas fa-cog"></i> <fmt:message key="podcastreceiver.settings"/></a></div></td>
     </c:if>
 </tr></table>
 

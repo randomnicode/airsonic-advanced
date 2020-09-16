@@ -129,15 +129,16 @@
 </div>
 
 <div style="padding-bottom:0.5em">
-    <div class="forward">
+    <div class="forward-without-glyph">
         <c:choose>
             <c:when test="${model.scanning}">
-                <a href="left.view"><fmt:message key="common.refresh"/></a>
+                <a href="left.view">
             </c:when>
             <c:otherwise>
-                <a href="left.view?refresh=true"><fmt:message key="common.refresh"/></a>
+                <a href="left.view?refresh=true">
             </c:otherwise>
         </c:choose>
+        <i class="fas fa-sync"></i> <fmt:message key="common.refresh"/></a>
     </div>
 </div>
 
@@ -159,8 +160,8 @@
     <div id="playlistOverflow" style="display:none"></div>
     <div style="padding-top: 0.3em"></div>
     <div class="forward" id="showAllPlaylists" style="display: none"><a href="#" onclick="showAllPlaylists()"><fmt:message key="left.showallplaylists"/></a></div>
-    <div class="forward"><a href="#" onclick="createEmptyPlaylist()"><fmt:message key="left.createplaylist"/></a></div>
-    <div class="forward"><a href="importPlaylist.view" target="main"><fmt:message key="left.importplaylist"/></a></div>
+    <div class="forward-without-glyph"><a href="#" onclick="createEmptyPlaylist()"><i class="fas fa-plus-circle"></i> <fmt:message key="left.createplaylist"/></a></div>
+    <div class="forward-without-glyph"><a href="importPlaylist.view" target="main"><i class="fas fa-file-import"></i> <fmt:message key="left.importplaylist"/></a></div>
 </div>
 
 <c:if test="${not empty model.radios}">

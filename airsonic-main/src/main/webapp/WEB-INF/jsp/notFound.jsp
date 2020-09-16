@@ -14,8 +14,8 @@
 
 <fmt:message key="notFound.text"/>
 
-<div class="forward" style="float:left;padding-right:10pt"><a href="javascript:top.location.reload(true)"><fmt:message key="notFound.reload"/></a></div>
-<div class="forward" style="float:left"><a href="musicFolderSettings.view"><fmt:message key="notFound.scan"/></a></div>
+<div class="forward-without-glyph" style="float:left;padding-right:10pt"><a href="javascript:top.location.reload(true)"><i class="fas fa-redo"></i> <fmt:message key="notFound.reload"/></a></div>
+<div class="forward-without-glyph" style="float:left"><a href="musicFolderSettings.view"><i class="fas fa-tools"></i> <fmt:message key="notFound.scan"/></a></div>
 
 </body>
 </html>
