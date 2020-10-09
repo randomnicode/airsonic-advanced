@@ -6,9 +6,12 @@
 <script type="text/javascript" src="<c:url value='/script/mediaelement/mediaelement-and-player.min.js'/>"></script>
 <script src="<c:url value='/script/mediaelement/plugins/speed/speed.min.js'/>"></script>
 <script src="<c:url value='/script/mediaelement/plugins/speed/speed-i18n.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/script/playQueueCast.js'/>"></script>
+<script src="<c:url value='/script/mediaelement/plugins/chromecast/chromecast.js'/>"></script>
+<script src="<c:url value='/script/mediaelement/plugins/chromecast/chromecast-i18n.js'/>"></script>
+<!--<script type="text/javascript" src="<c:url value='/script/playQueueCast.js'/>"></script>-->
 <script type="text/javascript" src="<c:url value='/script/playQueue/javaJukeboxPlayerControlBar.js'/>"></script>
 <link rel="stylesheet" href="<c:url value='/script/mediaelement/plugins/speed/speed.min.css'/>">
+<link rel="stylesheet" href="<c:url value='/script/mediaelement/plugins/chromecast/chromecast.min.css'/>">
 <style type="text/css">
     .ui-slider .ui-slider-handle {
         width: 11px;
@@ -100,7 +103,7 @@
         isVisible: false,
 
         // Initialize the Cast player (ChromeCast support)
-        CastPlayer: new CastPlayer(),
+        CastPlayer: {castSession: false},
 
         musicTable: null,
         audioPlayer: null,
@@ -557,9 +560,12 @@
                 alwaysShowControls: true,
                 enableKeyboard: false,
                 useDefaultControls: true,
-                features: ["speed"],
+                features: ["speed", "chromecast"],
                 defaultSpeed: "1.00",
                 speeds: ["8.00", "2.00", "1.50", "1.25", "1.00", "0.75", "0.5"],
+                castTitle: "Airsonic",
+                castAppId: "4FBFE470",
+                castPolicy: "tab",
                 success(mediaElement, originalNode, instance) {
                     // "hack" html5 renderer and reinitialize speed
                     instance.media.rendererName = "html5";
@@ -1108,7 +1114,7 @@
 
     <div class="player-tech player-tech-web" style="white-space:nowrap;">
         <div id="player" style="width:340px; height:40px">
-            <audio id="audioPlayer" width="340px" height="40px" tabindex="-1" ></audio>
+            <audio id="audioPlayer" width="340px" height="40px" tabindex="-1" ><source src=""></audio>
         </div>
         <div id="castPlayer" style="display: none">
             <div style="float:left">
@@ -1259,6 +1265,7 @@
     <div id="dialog-select-playlist-list"></div>
 </div>
 
+<!--
 <script type="text/javascript">
     window['__onGCastApiAvailable'] = function(isAvailable) {
         if (isAvailable) {
@@ -1267,3 +1274,4 @@
     };
 </script>
 <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+-->
