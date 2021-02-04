@@ -392,7 +392,7 @@
                     }
                 }});
 
-            pq.createMediaElementPlayer();
+            $(window).on('load', () => playQueue.createMediaElementPlayer());
             JavaJukeBox.initJavaJukeboxPlayerControlBar();
             <c:if test="${model.autoHide}">pq.initAutoHide();</c:if>
             pq.onTogglePlayQueue(${!model.autoHide});
@@ -791,7 +791,7 @@
                 player.src = song.streamUrl;
                 // Inform MEJS that we need to load a new media source. The
                 // 'canplay' event will be fired once playback is possible.
-                player.load();
+                //player.load();
                 // The 'skip' function takes a 'position' argument. We don't
                 // usually send it, and in this case it's better to do nothing.
                 // Otherwise, the 'canplay' event will also be fired after
@@ -1177,7 +1177,7 @@
 
     <div class="player-tech player-tech-web" style="white-space:nowrap;flex:1 1 300px;">
         <div id="player" style="height:40px">
-            <audio id="audioPlayer" style="width:100%; height:40px" tabindex="-1" ><source src=""></audio>
+            <audio id="audioPlayer" style="width:100%; height:40px" tabindex="-1" ><source src="dummysrc.mp3"></audio>
         </div>
         <div id="castPlayer" style="display: none">
             <div style="float:left">
