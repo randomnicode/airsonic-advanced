@@ -627,7 +627,7 @@
                 defaultSpeed: "1.00",
                 speeds: ["8.00", "2.00", "1.50", "1.25", "1.00", "0.75", "0.5"],
                 castTitle: "Airsonic",
-                castAppId: "4FBFE470",
+                castAppID: "4FBFE470",
                 castPolicy: "tab",
                 success(mediaElement, originalNode, instance) {
                     // "hack" html5 renderer and reinitialize speed
