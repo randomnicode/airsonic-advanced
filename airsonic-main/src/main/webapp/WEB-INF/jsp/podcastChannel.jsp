@@ -29,7 +29,7 @@
             $("#dialog-delete").dialog({resizable: false, height: 170, autoOpen: false,
                 buttons: {
                     "<fmt:message key="common.delete"/>": function() {
-                        location.href = "podcastReceiverAdmin.view?channelId=${model.channel.id}" +
+                        location.href = "podcastReceiverAdmin?channelId=${model.channel.id}" +
                                 "&deleteChannel=${model.channel.id}";
                     },
                     "<fmt:message key="common.cancel"/>": function() {
@@ -43,7 +43,7 @@
         }
 
         function downloadSelected() {
-            location.href = "podcastReceiverAdmin.view?channelId=${model.channel.id}&" +
+            location.href = "podcastReceiverAdmin?channelId=${model.channel.id}&" +
                     getSelectedEpisodes().map(i => "downloadEpisode=" + i).join("&");
         }
 
@@ -52,16 +52,16 @@
         }
 
         function deleteSelected() {
-            location.href = "podcastReceiverAdmin.view?channelId=${model.channel.id}&" +
+            location.href = "podcastReceiverAdmin?channelId=${model.channel.id}&" +
                     getSelectedEpisodes().map(i => "deleteEpisode=" + i).join("&");
         }
 
         function refreshChannels() {
-            location.href = "podcastReceiverAdmin.view?refresh&channelId=${model.channel.id}";
+            location.href = "podcastReceiverAdmin?refresh&channelId=${model.channel.id}";
         }
 
         function refreshPage() {
-            location.href = "podcastChannel.view?id=${model.channel.id}";
+            location.href = "podcastChannel?id=${model.channel.id}";
         }
 
         function getSelectedEpisodes() {
@@ -94,7 +94,7 @@
 </c:import>
 </div>
 
-<h1 id="name"><a href="podcastChannels.view"><fmt:message key="podcastreceiver.title"/></a> &raquo; ${fn:escapeXml(model.channel.title)}</h1>
+<h1 id="name"><a href="podcastChannels"><fmt:message key="podcastreceiver.title"/></a> &raquo; ${fn:escapeXml(model.channel.title)}</h1>
 <h2>
     <span class="header"><a href="javascript:top.playQueue.onPlayPodcastChannel(${model.channel.id})"><fmt:message key="common.play"/></a></span>
 
@@ -195,7 +195,7 @@
     </c:if>
     <td style="padding-right:2em"><div class="forward"><a href="javascript:refreshPage()"><fmt:message key="podcastreceiver.refresh"/></a></div></td>
     <c:if test="${model.user.adminRole}">
-        <td style="padding-right:2em"><div class="forward"><a href="podcastSettings.view?"><fmt:message key="podcastreceiver.settings"/></a></div></td>
+        <td style="padding-right:2em"><div class="forward"><a href="podcastSettings?"><fmt:message key="podcastreceiver.settings"/></a></div></td>
     </c:if>
 </tr></table>
 

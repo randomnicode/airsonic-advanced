@@ -69,7 +69,7 @@ public class InternetRadioSettingsController {
             redirectAttributes.addFlashAttribute("settings_reload", true);
         }
         redirectAttributes.addFlashAttribute("error", error);
-        return "redirect:internetRadioSettings.view";
+        return "redirect:internetRadioSettings";
     }
 
     private String handleParameters(HttpServletRequest request) {

@@ -134,7 +134,7 @@
         <span style="vertical-align: middle"><fmt:message key="more.random.title"/></span>
     </h2>
 
-    <form id="randomPlayQueue" method="post" action="randomPlayQueue.view?">
+    <form id="randomPlayQueue" method="post" action="randomPlayQueue?">
         <sec:csrfInput />
         <table>
             <tr>
@@ -294,7 +294,7 @@
         <span style="vertical-align: middle"><fmt:message key="more.upload.title"/></span>
     </h2>
 
-    <form method="post" enctype="multipart/form-data" action="upload.view?${_csrf.parameterName}=${_csrf.token}">
+    <form method="post" enctype="multipart/form-data" action="upload?${_csrf.parameterName}=${_csrf.token}">
         <table>
             <tr>
                 <td><fmt:message key="more.upload.source"/></td>

@@ -230,8 +230,8 @@ public class MediaFileEntry {
                 file.getDuration(), file.getFormat(), StringUtil.getMimeType(file.getFormat()), file.getMediaType().toString(),
                 StringUtil.formatBytes(file.getFileSize(), locale == null ? Locale.ENGLISH : locale),
                 file.getPlayCount(), file.getLastPlayed(), file.getCreated(), file.getChanged(), file.getLastScanned(),
-                starred, file.isPresent() && folderAccess, "main.view?id=" + file.getId(), streamUrl, remoteStreamUrl,
-                "coverArt.view?id=" + file.getId(), remoteCoverArtUrl);
+                starred, file.isPresent() && folderAccess, "main?id=" + file.getId(), streamUrl, remoteStreamUrl,
+                "coverArt?id=" + file.getId(), remoteCoverArtUrl);
     }
 
     private static String formatBitRate(MediaFile mediaFile) {

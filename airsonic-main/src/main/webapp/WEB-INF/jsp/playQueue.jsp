@@ -1004,9 +1004,9 @@
         },
 
         playlistUpdatedCallback(playlistId, toastMsg) {
-            if (!top.main.location.href.endsWith("playlist.view?id=" + playlistId)) {
+            if (!top.main.location.href.endsWith("playlist?id=" + playlistId)) {
                 // change page
-                top.main.location.href = "playlist.view?id=" + playlistId;
+                top.main.location.href = "playlist?id=" + playlistId;
             }
             $().toastmessage("showSuccessToast", toastMsg);
         },
@@ -1102,10 +1102,10 @@
                     artist: song.artist,
                     album: song.album,
                     artwork: [
-                        { src: "coverArt.view?id=" + song.id + "&size=96", sizes: '96x96', type: 'image/jpeg' },
-                        { src: "coverArt.view?id=" + song.id + "&size=128", sizes: '128x128', type: 'image/jpeg' },
-                        { src: "coverArt.view?id=" + song.id + "&size=256", sizes: '256x256', type: 'image/jpeg' },
-                        { src: "coverArt.view?id=" + song.id + "&size=512", sizes: '512x512', type: 'image/jpeg' }
+                        { src: "coverArt?id=" + song.id + "&size=96", sizes: '96x96', type: 'image/jpeg' },
+                        { src: "coverArt?id=" + song.id + "&size=128", sizes: '128x128', type: 'image/jpeg' },
+                        { src: "coverArt?id=" + song.id + "&size=256", sizes: '256x256', type: 'image/jpeg' },
+                        { src: "coverArt?id=" + song.id + "&size=512", sizes: '512x512', type: 'image/jpeg' }
                     ]
                 });
                 navigator.mediaSession.metadata = metadata;
@@ -1133,7 +1133,7 @@
             var n = new Notification(song.title, {
                 tag: "airsonic",
                 body: song.artist + " - " + song.album,
-                icon: "coverArt.view?id=" + song.id + "&size=110"
+                icon: "coverArt?id=" + song.id + "&size=110"
             });
             n.onshow = function() {
                 setTimeout(function() {n.close()}, 5000);
@@ -1166,9 +1166,9 @@
             } else if (id == "savePlaylist") {
                 this.onSavePlaylist();
             } else if (id == "downloadPlaylist") {
-                location.href = "download.view?player=" + this.player.id;
+                location.href = "download?player=" + this.player.id;
             } else if (id == "sharePlaylist") {
-                parent.frames.main.location.href = "createShare.view?player=" + this.player.id + "&" + this.querize(this.getSelectedIndexes(), "i");
+                parent.frames.main.location.href = "createShare?player=" + this.player.id + "&" + this.querize(this.getSelectedIndexes(), "i");
             } else if (id == "sortByTrack") {
                 this.onSortByTrack();
             } else if (id == "sortByArtist") {
@@ -1182,7 +1182,7 @@
             } else if (id == "unstar" && selectedIndexes.length > 0) {
                 this.onStar(selectedIndexes, false);
             } else if (id == "download" && selectedIndexes.length > 0) {
-                location.href = "download.view?player=" + this.player.id + "&" + this.querize(selectedIndexes, "i");
+                location.href = "download?player=" + this.player.id + "&" + this.querize(selectedIndexes, "i");
             } else if (id == "appendPlaylist" && selectedIndexes.length > 0) {
                 this.onAppendPlaylist();
             }
@@ -1217,7 +1217,7 @@
         },
 
         playerSettingsPage() {
-            top.frames.main.location.href = "playerSettings.view?id=" + this.player.id;
+            top.frames.main.location.href = "playerSettings?id=" + this.player.id;
         }
     };
 

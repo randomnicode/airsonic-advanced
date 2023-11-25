@@ -16,7 +16,7 @@
     <c:when test="${empty model.error}">
         <p>
             <fmt:message key="avataruploadresult.success"><fmt:param value="${fn:escapeXml(model.avatar.name)}"/></fmt:message>
-            <sub:url value="avatar.view" var="avatarUrl">
+            <sub:url value="avatar" var="avatarUrl">
                 <sub:param name="username" value="${model.username}"/>
                 <sub:param name="forceCustom" value="true"/>
             </sub:url>
@@ -31,7 +31,7 @@
     </c:otherwise>
 </c:choose>
 
-<div class="back"><a href="personalSettings.view?"><fmt:message key="common.back"/></a></div>
+<div class="back"><a href="personalSettings?"><fmt:message key="common.back"/></a></div>
 
 </body>
 </html>

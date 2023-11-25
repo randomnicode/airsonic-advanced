@@ -47,7 +47,7 @@ import java.util.*;
  * @author Sindre Mehus
  */
 @Controller
-@RequestMapping("/randomPlayQueue.view")
+@RequestMapping("/randomPlayQueue")
 public class RandomPlayQueueController {
 
     @Autowired
@@ -237,7 +237,7 @@ public class RandomPlayQueueController {
         Player player = playerService.getPlayer(request, response);
         playQueueService.addRandomCriteria(player, shouldAddToPlaylist, criteria, autoRandom != null);
 
-        return "redirect:more.view";
+        return "redirect:more";
     }
 
     private List<MusicFolder> getMusicFolders(HttpServletRequest request) throws ServletRequestBindingException {

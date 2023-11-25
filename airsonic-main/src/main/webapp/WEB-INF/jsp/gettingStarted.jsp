@@ -6,7 +6,7 @@
     <script type="text/javascript" language="javascript">
         function hideGettingStarted() {
             alert("<spring:message code='gettingStarted.hidealert' javaScriptEscape='true'/>");
-            location.href = "gettingStarted.view?hide";
+            location.href = "gettingStarted?hide";
         }
     </script>
 </head>
@@ -27,14 +27,14 @@
     <tr>
         <td style="font-size:26pt;padding:20pt">1</td>
         <td>
-            <div style="font-size:14pt"><a href="userSettings.view?userIndex=0"><fmt:message key="gettingStarted.step1.title"/></a></div>
+            <div style="font-size:14pt"><a href="userSettings?userIndex=0"><fmt:message key="gettingStarted.step1.title"/></a></div>
             <div style="padding-top:5pt"><fmt:message key="gettingStarted.step1.text"/></div>
         </td>
     </tr>
     <tr>
         <td style="font-size:26pt;padding:20pt">2</td>
         <td>
-            <div style="font-size:14pt"><a href="musicFolderSettings.view"><fmt:message key="gettingStarted.step2.title"/></a></div>
+            <div style="font-size:14pt"><a href="musicFolderSettings"><fmt:message key="gettingStarted.step2.title"/></a></div>
             <div style="padding-top:5pt"><fmt:message key="gettingStarted.step2.text"/></div>
         </td>
     </tr>

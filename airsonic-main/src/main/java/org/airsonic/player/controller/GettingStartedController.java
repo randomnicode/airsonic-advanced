@@ -45,7 +45,7 @@ public class GettingStartedController {
         if (request.getParameter("hide") != null) {
             settingsService.setGettingStartedEnabled(false);
             settingsService.save();
-            return new ModelAndView(new RedirectView("home.view"));
+            return new ModelAndView(new RedirectView("home"));
         }
 
         Map<String, Object> map = new HashMap<>();

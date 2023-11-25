@@ -112,7 +112,7 @@
         <td style="padding-left:0.5em"><input type="submit" value="<fmt:message key='common.ok'/>"></td>
     </tr></table>
 </form>
-<sub:url value="main.view" var="backUrl"><sub:param name="id" value="${model.id}"/></sub:url>
+<sub:url value="main" var="backUrl"><sub:param name="id" value="${model.id}"/></sub:url>
 <div style="padding-top:0.5em;padding-bottom:0.5em">
     <div class="back"><a href="${backUrl}"><fmt:message key="common.back"/></a></div>
 </div>

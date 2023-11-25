@@ -189,7 +189,7 @@ public class SettingsService {
             "Use it to share your music with friends, or to listen to your own music while at work. You can stream to multiple " +
             "players simultaneously, for instance to one player in your kitchen and another in your living room.\n" +
             "\\\\ \\\\\n" +
-            "To change or remove this message, log in with administrator rights and go to <a href='settings.view'>Settings</a> > <a href='generalSettings.view'>General</a>.";
+            "To change or remove this message, log in with administrator rights and go to <a href='settings'>Settings</a> > <a href='generalSettings'>General</a>.";
     private static final String DEFAULT_LOGIN_MESSAGE = null;
     private static final String DEFAULT_SESSION_TIMEOUT_DURATION = "30m";
     private static final String DEFAULT_LOCALE_LANGUAGE = "en";

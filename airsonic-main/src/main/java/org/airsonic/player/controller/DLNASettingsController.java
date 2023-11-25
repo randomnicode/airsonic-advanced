@@ -67,7 +67,7 @@ public class DLNASettingsController {
     public String handlePost(HttpServletRequest request, RedirectAttributes redirectAttributes) {
         handleParameters(request);
         redirectAttributes.addFlashAttribute("settings_toast", true);
-        return "redirect:dlnaSettings.view";
+        return "redirect:dlnaSettings";
     }
 
     private void handleParameters(HttpServletRequest request) {

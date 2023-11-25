@@ -189,7 +189,7 @@ public class PersonalSettingsController {
         redirectAttributes.addFlashAttribute("settings_reload", true);
         redirectAttributes.addFlashAttribute("settings_toast", true);
 
-        return "redirect:personalSettings.view";
+        return "redirect:personalSettings";
     }
 
     private int getAvatarId(UserSettings userSettings) {

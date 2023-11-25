@@ -26,7 +26,7 @@
             top.StompClient.subscribe("starred.jsp", {
                 '/user/queue/playlists/create/starred': function(msg) {
                     var playlistId = JSON.parse(msg.body);
-                    top.main.location.href = "playlist.view?id=" + playlistId;
+                    top.main.location.href = "playlist?id=" + playlistId;
                     $().toastmessage("showSuccessToast", "<fmt:message key="playlist.toast.saveasplaylist"/>");
                 }
             });
@@ -87,7 +87,7 @@
     <table class="music indent">
         <c:forEach items="${model.artists}" var="artist">
 
-            <c:url value="/main.view" var="mainUrl">
+            <c:url value="/main" var="mainUrl">
                 <c:param name="id" value="${artist.id}"/>
             </c:url>
 
@@ -113,7 +113,7 @@
     <table class="music indent">
         <c:forEach items="${model.songs}" var="song">
 
-            <sub:url value="/main.view" var="mainUrl">
+            <sub:url value="/main" var="mainUrl">
                 <sub:param name="path" value="${song.parentPath}"/>
             </sub:url>
 
@@ -159,7 +159,7 @@
     <table class="music indent">
         <c:forEach items="${model.videos}" var="video">
 
-            <c:url value="/videoPlayer.view" var="videoUrl">
+            <c:url value="/videoPlayer" var="videoUrl">
                 <c:param name="id" value="${video.id}"/>
             </c:url>
 

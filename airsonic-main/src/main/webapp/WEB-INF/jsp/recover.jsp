@@ -7,7 +7,7 @@
 </head>
 <body class="mainframe bgcolor1">
 
-<form action="recover.view" method="POST">
+<form action="recover" method="POST">
     <sec:csrfInput />
     <div class="bgcolor2 shadow" style="padding:20px 50px 20px 50px; margin-top:100px;margin-left:50px;margin-right:50px">
 
@@ -36,7 +36,7 @@
                 <p style="padding-top: 1em" class="warning"><fmt:message key="${model.error}"/></p>
             </c:if>
 
-            <div class="back" style="margin-top: 1.5em"><a href="login.view"><fmt:message key="common.back"/></a></div>
+            <div class="back" style="margin-top: 1.5em"><a href="login"><fmt:message key="common.back"/></a></div>
 
         </div>
     </div>

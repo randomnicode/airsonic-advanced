@@ -22,7 +22,7 @@
         <c:otherwise></h2><h2></c:otherwise>
     </c:choose>
 
-    <c:url var="url" value="${cat}Settings.view?"/>
+    <c:url var="url" value="${cat}Settings?"/>
 
     <c:choose>
         <c:when test="${param.cat eq cat}">

@@ -79,7 +79,7 @@
                   title: "<fmt:message key='playlists.name'/>",
                   render: function(data, type, row) {
                       if (type == "display" && data != null) {
-                          return $("<a>", {title: data, alt: data, text: data, target: "main"}).attr("href", "playlist.view?id=" + row.id)[0].outerHTML;
+                          return $("<a>", {title: data, alt: data, text: data, target: "main"}).attr("href", "playlist?id=" + row.id)[0].outerHTML;
                       }
                       return data;
                   }
@@ -230,7 +230,7 @@
         top.playQueue.onAddPlaylist(playlists[index].id);
       }
       function onExport(index) {
-        location.href="exportPlaylist.view?id="+playlists[index].id;
+        location.href="exportPlaylist?id="+playlists[index].id;
       }
       function onDelete(index) {
         if (playlists[index].username == user) {
@@ -308,7 +308,7 @@
       }
       function generateThumb(playlist, delay) {
         $('#noplaylists').hide();
-        var urlBase = "<c:url value='/coverArtJsp.view'/>";
+        var urlBase = "<c:url value='/coverArtJsp'/>";
         //append container first to keep order intact when async callback happens
         $('#thumbs').append('<div class="albumThumb" id="playlistThumb-' + playlist.id + '"></div>');
         var delayString = delay ? ("&appearAfter=" + delay) : "";
@@ -390,7 +390,7 @@
 
 <h2>
   <span class="header"><a href="javascript:void(0)" onclick="createEmptyPlaylist();"><fmt:message key="left.createplaylist"/></a></span> | 
-  <span class="header"><a href="importPlaylist.view" target="main"><fmt:message key="left.importplaylist"/></a></span>
+  <span class="header"><a href="importPlaylist" target="main"><fmt:message key="left.importplaylist"/></a></span>
 </h2>
 
 </body>

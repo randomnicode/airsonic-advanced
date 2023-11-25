@@ -157,7 +157,7 @@ public class PlayerSettingsController {
             transcodingService.setTranscodingsForPlayer(player, command.getActiveTranscodingIds());
 
             redirectAttributes.addFlashAttribute("settings_toast", true);
-            return "redirect:playerSettings.view?id=" + command.getPlayerId();
+            return "redirect:playerSettings?id=" + command.getPlayerId();
         } else {
             return "redirect:notFound";
         }

@@ -204,7 +204,7 @@ public class DispatchingContentDirectory extends CustomContentDirectory {
                 .uriComponents(jwtSecurityService
                         .addJWTToken(
                                 User.USERNAME_ANONYMOUS,
-                                UriComponentsBuilder.fromUriString("ext/coverArt.view")
+                                UriComponentsBuilder.fromUriString("ext/coverArt")
                                         .queryParam("id", id)
                                         .queryParam("size", CoverArtScheme.LARGE.getSize()))
                         .build())

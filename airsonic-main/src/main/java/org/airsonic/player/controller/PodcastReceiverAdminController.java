@@ -56,7 +56,7 @@ public class PodcastReceiverAdminController {
         if (add != null) {
             String url = StringUtils.trim(add);
             podcastService.createChannel(url);
-            return new ModelAndView(new RedirectView("podcastChannels.view"));
+            return new ModelAndView(new RedirectView("podcastChannels"));
         }
         if (downloadEpisode != null && channelId != null) {
             downloadEpisode.parallelStream()
@@ -65,26 +65,26 @@ public class PodcastReceiverAdminController {
                             && (episode.getStatus() == PodcastStatus.NEW || episode.getStatus() == PodcastStatus.ERROR
                                     || episode.getStatus() == PodcastStatus.SKIPPED))
                     .forEach(podcastService::downloadEpisode);
-            return new ModelAndView(new RedirectView("podcastChannel.view?id=" + channelId));
+            return new ModelAndView(new RedirectView("podcastChannel?id=" + channelId));
         }
         if (deleteChannel != null && channelId != null) {
             podcastService.deleteChannel(channelId);
-            return new ModelAndView(new RedirectView("podcastChannels.view"));
+            return new ModelAndView(new RedirectView("podcastChannels"));
         }
         if (deleteEpisode != null) {
             deleteEpisode.forEach(episodeId -> podcastService.deleteEpisode(episodeId, true));
-            return new ModelAndView(new RedirectView("podcastChannel.view?id=" + channelId));
+            return new ModelAndView(new RedirectView("podcastChannel?id=" + channelId));
         }
         if (refresh != null) {
             if (channelId != null) {
                 podcastService.refreshChannel(channelId, true);
-                return new ModelAndView(new RedirectView("podcastChannel.view?id=" + channelId));
+                return new ModelAndView(new RedirectView("podcastChannel?id=" + channelId));
             } else {
                 podcastService.refreshAllChannels(true);
-                return new ModelAndView(new RedirectView("podcastChannels.view"));
+                return new ModelAndView(new RedirectView("podcastChannels"));
             }
         }
 
-        return new ModelAndView(new RedirectView("podcastChannels.view"));
+        return new ModelAndView(new RedirectView("podcastChannels"));
     }
 }

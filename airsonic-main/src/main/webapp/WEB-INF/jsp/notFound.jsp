@@ -16,7 +16,7 @@
 <fmt:message key="notFound.text"/>
 
 <div class="forward" style="float:left;padding-right:10pt"><a href="javascript:top.location.reload(true)"><fmt:message key="notFound.reload"/></a></div>
-<div class="forward" style="float:left"><a href="musicFolderSettings.view"><fmt:message key="notFound.scan"/></a></div>
+<div class="forward" style="float:left"><a href="musicFolderSettings"><fmt:message key="notFound.scan"/></a></div>
 
 </body>
 </html>

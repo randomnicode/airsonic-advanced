@@ -108,7 +108,7 @@ public class AdvancedSettingsController {
 
         settingsService.save();
 
-        return "redirect:advancedSettings.view";
+        return "redirect:advancedSettings";
     }
 
 }

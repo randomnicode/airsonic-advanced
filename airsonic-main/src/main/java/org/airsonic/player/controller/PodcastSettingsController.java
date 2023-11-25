@@ -139,6 +139,6 @@ public class PodcastSettingsController {
                 .ifPresent(podcastService::createOrUpdateChannelRule);
 
         redirectAttributes.addFlashAttribute("settings_toast", success);
-        return "redirect:podcastSettings.view";
+        return "redirect:podcastSettings";
     }
 }

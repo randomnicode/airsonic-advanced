@@ -169,7 +169,7 @@ public class ExternalPlayerController {
         String coverArtUrl = baseUrl + jwtSecurityService.addJWTToken(
                 User.USERNAME_GUEST,
                 UriComponentsBuilder
-                        .fromUriString(prefix + "/coverArt.view")
+                        .fromUriString(prefix + "/coverArt")
                         .queryParam("id", mediaFile.getId())
                         .queryParam("size", "500"),
                 expires)

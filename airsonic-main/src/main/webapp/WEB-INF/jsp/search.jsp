@@ -42,7 +42,7 @@
     <table class="music indent">
         <c:forEach items="${command.artists}" var="match" varStatus="loopStatus">
 
-            <sub:url value="/main.view" var="mainUrl">
+            <sub:url value="/main" var="mainUrl">
                 <c:forEach items="${match.value}" var="mid">
                     <sub:param name="id" value="${mid}"/>
                 </c:forEach>
@@ -70,7 +70,7 @@
     <table class="music indent">
         <c:forEach items="${command.albums}" var="match" varStatus="loopStatus">
 
-            <sub:url value="/main.view" var="mainUrl">
+            <sub:url value="/main" var="mainUrl">
                 <c:forEach items="${match.value}" var="mid">
                     <sub:param name="id" value="${mid}"/>
                 </c:forEach>
@@ -101,7 +101,7 @@
     <table class="music indent">
         <c:forEach items="${command.songs}" var="match" varStatus="loopStatus">
 
-            <sub:url value="/main.view" var="mainUrl">
+            <sub:url value="/main" var="mainUrl">
                 <sub:param name="path" value="${match.folderId}:${match.parentPath}"/>
             </sub:url>
 

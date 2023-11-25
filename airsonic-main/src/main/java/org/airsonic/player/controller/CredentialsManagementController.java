@@ -150,7 +150,7 @@ public class CredentialsManagementController {
 
         redirectAttributes.addFlashAttribute("settings_toast", success);
 
-        return "redirect:credentialsSettings.view";
+        return "redirect:credentialsSettings";
     }
 
     @PutMapping
@@ -187,7 +187,7 @@ public class CredentialsManagementController {
 
         redirectAttributes.addFlashAttribute("settings_toast", failures.isEmpty());
 
-        return "redirect:credentialsSettings.view";
+        return "redirect:credentialsSettings";
     }
 
     @PostMapping(path = "/admin")
@@ -196,11 +196,11 @@ public class CredentialsManagementController {
         if (br.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.adminControls", br);
             redirectAttributes.addFlashAttribute("adminControls", ac);
-            return "redirect:/credentialsSettings.view";
+            return "redirect:/credentialsSettings";
         }
 
         if (map.getAttribute("adminRole") == null || !((boolean) map.getAttribute("adminRole"))) {
-            return "redirect:/credentialsSettings.view";
+            return "redirect:/credentialsSettings";
         }
 
         boolean success = true;
@@ -243,6 +243,6 @@ public class CredentialsManagementController {
 
         redirectAttributes.addFlashAttribute("settings_toast", success);
 
-        return "redirect:/credentialsSettings.view";
+        return "redirect:/credentialsSettings";
     }
 }

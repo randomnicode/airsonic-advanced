@@ -159,7 +159,7 @@ public class AlbumUpnpProcessor extends UpnpContentProcessor <Album, MediaFile> 
                 .uriComponents(getDispatcher().getJwtSecurityService()
                         .addJWTToken(
                                 User.USERNAME_ANONYMOUS,
-                                UriComponentsBuilder.fromUriString("ext/coverArt.view")
+                                UriComponentsBuilder.fromUriString("ext/coverArt")
                                         .queryParam("id", albumId)
                                         .queryParam("size", CoverArtScheme.LARGE.getSize()))
                         .build())

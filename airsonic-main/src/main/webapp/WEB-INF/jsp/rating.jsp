@@ -11,7 +11,7 @@ PARAMETERS
 
 <c:forEach var="i" begin="1" end="5">
 
-    <sub:url value="setRating.view" var="ratingUrl">
+    <sub:url value="setRating" var="ratingUrl">
         <sub:param name="id" value="${param.id}"/>
         <sub:param name="action" value="rating"/>
         <sub:param name="rating" value="${i}"/>
@@ -40,7 +40,7 @@ PARAMETERS
 
 </c:forEach>
 
-<sub:url value="setRating.view" var="clearRatingUrl">
+<sub:url value="setRating" var="clearRatingUrl">
     <sub:param name="id" value="${param.id}"/>
     <sub:param name="action" value="rating"/>
     <sub:param name="rating" value="0"/>

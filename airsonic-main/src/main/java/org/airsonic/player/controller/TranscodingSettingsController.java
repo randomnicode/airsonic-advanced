@@ -78,7 +78,7 @@ public class TranscodingSettingsController {
         } else {
             redirectAttributes.addFlashAttribute("settings_toast", true);
         }
-        return "redirect:transcodingSettings.view";
+        return "redirect:transcodingSettings";
     }
 
     private String handleParameters(HttpServletRequest request, RedirectAttributes redirectAttributes) {

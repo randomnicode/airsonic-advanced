@@ -33,7 +33,7 @@
                     <input type="checkbox" name="remember-me" id="remember" tabindex="3">
                 </div>
 
-                <a href="recover.view"><fmt:message key="login.recover"/></a>
+                <a href="recover"><fmt:message key="login.recover"/></a>
             </div>
 
             <c:if test="${model.logout}">

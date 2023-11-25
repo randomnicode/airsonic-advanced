@@ -35,7 +35,7 @@
     <c:param name="toast" value="${settings_toast}"/>
 </c:import>
 
-<form method="post" action="sonosSettings.view">
+<form method="post" action="sonosSettings">
     <sec:csrfInput/>
 
     <div>
@@ -121,7 +121,7 @@
 
     <p>
         <input type="submit" value="<fmt:message key='common.save'/>" style="margin-right:0.3em">
-        <a href='nowPlaying.view'><input type="button" value="<fmt:message key='common.cancel'/>"></a>
+        <a href='nowPlaying'><input type="button" value="<fmt:message key='common.cancel'/>"></a>
     </p>
 
     <p></p>

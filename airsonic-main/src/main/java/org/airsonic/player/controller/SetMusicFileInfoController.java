@@ -56,7 +56,7 @@ public class SetMusicFileInfoController {
             mediaFileService.updateMediaFile(mediaFile);
         }
 
-        String url = "main.view?id=" + id;
+        String url = "main?id=" + id;
         return new ModelAndView(new RedirectView(url));
     }
 

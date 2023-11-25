@@ -277,7 +277,7 @@ public class FolderBasedContentDirectory extends CustomContentDirectory {
                 .uriComponents(jwtSecurityService
                         .addJWTToken(
                                 User.USERNAME_ANONYMOUS,
-                                UriComponentsBuilder.fromUriString("ext/coverArt.view")
+                                UriComponentsBuilder.fromUriString("ext/coverArt")
                                         .queryParam("id", album.getId())
                                         .queryParam("size", CoverArtScheme.LARGE.getSize()))
                         .build())

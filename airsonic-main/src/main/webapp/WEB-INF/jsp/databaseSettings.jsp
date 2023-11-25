@@ -103,7 +103,7 @@
     <c:param name="toast" value="${settings_toast}"/>
 </c:import>
 
-<form:form modelAttribute="command" action="databaseSettings.view" method="post">
+<form:form modelAttribute="command" action="databaseSettings" method="post">
     <p><fmt:message key="databasesettings.moreinfo"/></p>
 
     <table style="white-space:nowrap" class="indent">
@@ -230,7 +230,7 @@
 
     <p>
         <input type="submit" value="<fmt:message key='common.save'/>" style="margin-right:0.3em">
-        <a href="nowPlaying.view"><input type="button" value="<fmt:message key='common.cancel'/>"></a>
+        <a href="nowPlaying"><input type="button" value="<fmt:message key='common.cancel'/>"></a>
     </p>
 
 </form:form>
@@ -254,7 +254,7 @@
       </button>
     </div>
 
-    <form method="post" enctype="multipart/form-data" action="upload.view?${_csrf.parameterName}=${_csrf.token}" onsubmit="importDB()">
+    <form method="post" enctype="multipart/form-data" action="upload?${_csrf.parameterName}=${_csrf.token}" onsubmit="importDB()">
         <input type="hidden" id="dir" name="dir" value="${command.importFolder}"/>
         <input type="hidden" name="callback" value="${command.callback}"/>
         <input type="hidden" name="unzip" value="true"/>
