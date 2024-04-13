@@ -19,6 +19,8 @@
  */
 package org.airsonic.player.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.airsonic.player.command.SearchCommand;
 import org.airsonic.player.dao.AlbumDao;
 import org.airsonic.player.domain.*;
@@ -38,9 +40,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import java.util.List;
 import java.util.Objects;
@@ -86,7 +85,7 @@ public class SearchController {
     }
 
     @PostMapping
-    protected String onSubmit(HttpServletRequest request, HttpServletResponse response,@ModelAttribute("command") SearchCommand command, Model model) throws Exception {
+    protected String onSubmit(HttpServletRequest request, HttpServletResponse response, @ModelAttribute("command") SearchCommand command, Model model) throws Exception {
 
         User user = securityService.getCurrentUser(request);
         UserSettings userSettings = settingsService.getUserSettings(user.getUsername());

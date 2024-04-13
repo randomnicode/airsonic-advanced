@@ -19,27 +19,19 @@
 
 package org.airsonic.player.service.sonos;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <p>Registration with Sonos controller. They are 2 types of registration they are still supported by Sonos.
@@ -78,7 +70,6 @@ public class SonosServiceRegistration {
         }
     }
 
-
     /**
      * Enable or disable Sonos registration
      *
@@ -96,73 +87,58 @@ public class SonosServiceRegistration {
 
         LOG.info("Setting Sonos music service enabled={}, using Sonos controller IP={}, SID={}, Airsonic url={}", enabled, sonosControllerIp, sonosServiceId, localUrl);
 
-        List<Pair<String, String>> params = new ArrayList<>();
-        params.add(Pair.of("sid", String.valueOf(sonosServiceId)));
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("sid", String.valueOf(sonosServiceId));
 
         // Need the csrf token on each request
         String csrfToken = retrieveCsrfToken(controllerUrl);
         if (csrfToken != null) {
-            params.add(Pair.of("csrfToken", csrfToken));
+            params.add("csrfToken", csrfToken);
         }
 
         if (enabled) {
-            params.add(Pair.of("name", sonosServiceName));
-            params.add(Pair.of("uri", localUrl));
-            params.add(Pair.of("secureUri", localUrl));
-            params.add(Pair.of("pollInterval", "1200"));
-            params.add(Pair.of("containerType", "MService"));
-            params.add(Pair.of("caps", "search"));
-            params.add(Pair.of("caps", "trFavorites"));
-            params.add(Pair.of("caps", "alFavorites"));
-            params.add(Pair.of("caps", "ucPlaylists"));
-            params.add(Pair.of("caps", "extendedMD"));
+            params.add("name", sonosServiceName);
+            params.add("uri", localUrl);
+            params.add("secureUri", localUrl);
+            params.add("pollInterval", "1200");
+            params.add("containerType", "MService");
+            params.add("caps", "search");
+            params.add("caps", "trFavorites");
+            params.add("caps", "alFavorites");
+            params.add("caps", "ucPlaylists");
+            params.add("caps", "extendedMD");
 
             // If you change airsonic/airsonic-main/src/main/webapp/sonos/presentationMap.xml
             // Change the presentationMapVersion @see https://musicpartners.sonos.com/node/134
-            params.add(Pair.of("presentationMapVersion", "1"));
-            params.add(Pair.of("presentationMapUri", airsonicBaseUrl + "sonos/presentationMap.xml"));
+            params.add("presentationMapVersion", "1");
+            params.add("presentationMapUri", airsonicBaseUrl + "sonos/presentationMap.xml");
 
             // Don't forget to change `stringsVersion` if you change the text in airsonic/airsonic-main/src/main/webapp/sonos/strings.xml
             // Change the stringsVersion @see https://musicpartners.sonos.com/node/134
-            params.add(Pair.of("stringsVersion", "11"));
-            params.add(Pair.of("stringsUri", airsonicBaseUrl + "sonos/strings.xml"));
-            params.add(Pair.of("authType", authenticationType.getFieldValue()));
+            params.add("stringsVersion", "11");
+            params.add("stringsUri", airsonicBaseUrl + "sonos/strings.xml");
+            params.add("authType", authenticationType.getFieldValue());
 
         } else {
 
             // To disable a Sonos device, just name it with an empty value.
-            params.add(Pair.of("name", null));
+            params.add("name", null);
         }
 
         return execute(controllerUrl, params);
     }
 
+    RestClient restClient = RestClient.create();
 
-    private boolean execute(String url, List<Pair<String, String>> parameters) throws IOException {
-        List<NameValuePair> params = new ArrayList<>();
-        for (Pair<String, String> parameter : parameters) {
-            params.add(new BasicNameValuePair(parameter.getKey(), parameter.getValue()));
-        }
-
-        HttpPost request = new HttpPost(url);
-        request.setConfig(getDefaultRequestConfig());
-
-        // We're not using UTF8 encoding here since the Sonos controller doesn't like it.
-        request.setEntity(new UrlEncodedFormEntity(params));
-
-        String result = executeRequest(request);
+    private boolean execute(String url, MultiValueMap<String, String> parameters) throws IOException {
+        String result = restClient.post()
+                .uri(url).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(new HttpEntity<>(parameters))
+                .retrieve()
+                .body(String.class);
         LOG.info("Sonos controller returned: {}", result);
 
         return result.contains("Success");
-    }
-
-    private String executeRequest(HttpUriRequest request) throws IOException {
-
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            ResponseHandler<String> responseHandler = new BasicResponseHandler();
-            return client.execute(request, responseHandler);
-
-        }
     }
 
     private String retrieveCsrfToken(String controllerUrl) throws IOException {
@@ -174,13 +150,5 @@ public class SonosServiceRegistration {
         }
 
         return null;
-    }
-
-    private RequestConfig getDefaultRequestConfig() {
-        return RequestConfig.custom()
-                .setConnectTimeout(20 * 1000) // 20 seconds
-                .setSocketTimeout(20 * 1000) // 20 seconds
-                .build();
-
     }
 }

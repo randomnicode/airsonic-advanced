@@ -1,9 +1,10 @@
 package org.airsonic.player.service;
 
+import jakarta.annotation.PostConstruct;
 import liquibase.Contexts;
 import liquibase.Liquibase;
 import liquibase.command.CommandScope;
-import liquibase.command.core.InternalExecuteSqlCommandStep;
+import liquibase.command.core.ExecuteSqlCommandStep;
 import liquibase.database.Database;
 import liquibase.database.DatabaseConnection;
 import liquibase.database.DatabaseFactory;
@@ -23,8 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -221,10 +220,10 @@ public class DatabaseService {
     private static void truncateAll(Database db, Connection c) throws Exception {
         String sql = TABLE_ORDER.stream().flatMap(t -> t.stream())
                 .map(t -> "delete from " + t).collect(joining("; "));
-        CommandScope commandScope = new CommandScope("internalExecuteSql");
-        commandScope.addArgumentValue(InternalExecuteSqlCommandStep.DATABASE_ARG, db);
-        commandScope.addArgumentValue(InternalExecuteSqlCommandStep.SQL_ARG, sql);
-        commandScope.addArgumentValue(InternalExecuteSqlCommandStep.DELIMITER_ARG, ";");
+
+        CommandScope commandScope = new CommandScope(ExecuteSqlCommandStep.COMMAND_NAME);
+        commandScope.addArgumentValue(ExecuteSqlCommandStep.SQL_ARG, sql);
+        commandScope.addArgumentValue(ExecuteSqlCommandStep.DELIMITER_ARG, ";");
 
         commandScope.execute();
     }

@@ -1,5 +1,6 @@
 package org.airsonic.player.ajax;
 
+import jakarta.validation.constraints.NotNull;
 import org.airsonic.player.domain.MediaFile;
 import org.airsonic.player.domain.MusicFolder;
 import org.airsonic.player.service.MediaFileService;
@@ -17,8 +18,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-
-import javax.validation.constraints.NotNull;
 
 @Controller
 @MessageMapping("/tags")

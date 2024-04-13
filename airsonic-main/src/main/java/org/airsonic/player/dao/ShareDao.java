@@ -19,13 +19,12 @@
  */
 package org.airsonic.player.dao;
 
+import jakarta.annotation.PostConstruct;
 import org.airsonic.player.domain.MusicFolder;
 import org.airsonic.player.domain.Share;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.PostConstruct;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

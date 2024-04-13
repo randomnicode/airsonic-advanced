@@ -22,6 +22,7 @@ package org.airsonic.player.service;
 import de.umass.lastfm.*;
 import de.umass.lastfm.Album;
 import de.umass.lastfm.Artist;
+import jakarta.annotation.PostConstruct;
 import org.airsonic.player.dao.ArtistDao;
 import org.airsonic.player.dao.MediaFileDao;
 import org.airsonic.player.domain.*;
@@ -30,8 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 
 import java.nio.file.Path;
 import java.util.*;

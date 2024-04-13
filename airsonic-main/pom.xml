@@ -9,14 +9,14 @@
     <parent>
         <groupId>org.airsonic.player</groupId>
         <artifactId>airsonic</artifactId>
-        <version>11.0.0-SNAPSHOT</version>
+        <version>12.0.0-SNAPSHOT</version>
     </parent>
 
     <properties>
         <chameleon.version>2.0.0-RELEASE</chameleon.version>
         <tomcat.server.scope>provided</tomcat.server.scope>
         <!-- For fixing import/export due to https://github.com/liquibase/liquibase/issues/1598 -->
-        <liquibase.version>4.6.2</liquibase.version>
+        <!--<liquibase.version>4.6.2</liquibase.version>-->
     </properties>
 
     <dependencies>
@@ -52,12 +52,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>jakarta.servlet.jsp</groupId>
             <artifactId>jakarta.servlet.jsp-api</artifactId>
             <version>2.3.6</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
@@ -122,7 +122,7 @@
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
-            <version>3.15.0</version>
+            <version>4.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.ldap</groupId>
@@ -134,18 +134,18 @@
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.70</version>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.77</version>
             <scope>runtime</scope>
         </dependency>
         <!-- END Spring -->
 
         <!-- taglibs -->
-        <dependency>
-            <groupId>org.apache.taglibs</groupId>
-            <artifactId>taglibs-standard-impl</artifactId>
-            <version>1.2.5</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.taglibs</groupId>-->
+<!--            <artifactId>taglibs-standard-impl</artifactId>-->
+<!--            <version>1.2.5</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>taglibs</groupId>
             <artifactId>string</artifactId>
@@ -164,11 +164,11 @@
             <artifactId>lucene-analyzers-common</artifactId>
             <version>8.9.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.ant</groupId>-->
+<!--            <artifactId>ant</artifactId>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -177,9 +177,15 @@
         </dependency>
 
         <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.4</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-fileupload2-jakarta</artifactId>
+            <version>2.0.0-M1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -190,13 +196,14 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+            <version>2.16.0</version>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -206,17 +213,23 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-            <version>1.21</version>
+            <version>1.26.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.tukaani</groupId>
             <artifactId>xz</artifactId>
-            <version>1.8</version>
+            <version>1.9</version>
         </dependency>
         <dependency>
             <groupId>com.github.junrar</groupId>
             <artifactId>junrar</artifactId>
-            <version>7.4.1</version>
+            <version>7.5.5</version>
         </dependency>
 
         <dependency>
@@ -228,11 +241,16 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <version>33.1.0-jre</version>
             <exclusions>
-             <exclusion>
-              <groupId>org.checkerframework</groupId>
-              <artifactId>checker-qual</artifactId>
-             </exclusion>
+                <exclusion>
+                    <groupId>org.checkerframework</groupId>
+                    <artifactId>checker-qual</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.errorprone</groupId>
+                    <artifactId>error_prone_annotations</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -242,14 +260,14 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
-            <version>2.5.0</version>
+            <!--<version>2.5.0</version>-->
             <scope>runtime</scope>
         </dependency>
 
@@ -261,32 +279,38 @@
 
         <dependency>
             <groupId>org.jdom</groupId>
-            <artifactId>jdom</artifactId>
-            <version>2.0.2</version>
+            <artifactId>jdom2</artifactId>
+            <version>2.0.6.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.moxy</artifactId>
-            <version>2.7.8</version>
+            <version>4.0.2</version>
         </dependency>
 
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <scope>provided</scope>
+<!--            <scope>provided</scope>-->
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>3.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jakarta.servlet.jsp.jstl</artifactId>
-            <version>1.2.6</version>
-            <scope>runtime</scope>
+            <version>3.0.1</version>
         </dependency>
+
         <dependency>
 		    <groupId>net.sargue</groupId>
 		    <artifactId>java-time-jsptags</artifactId>
-		    <version>1.1.4</version>
+		    <version>2.0.2</version>
 		</dependency>
 
         <dependency>
@@ -323,27 +347,38 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- UPNP / DLNA -->
-        <dependency>
-            <groupId>org.fourthline.cling</groupId>
-            <artifactId>cling-core</artifactId>
-            <!-- Cling removed the org.fourthline.cling.transport.impl.apache package in 2.1, which is needed to make Cling work with Tomcat. -->
-            <!-- Don't upgrade this unless you can test UPnP/DLNA support properly! -->
-            <version>2.0.1</version>
-        </dependency>
+<!--        &lt;!&ndash; UPNP / DLNA &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.fourthline.cling</groupId>-->
+<!--            <artifactId>cling-core</artifactId>-->
+<!--            &lt;!&ndash; Cling removed the org.fourthline.cling.transport.impl.apache package in 2.1, which is needed to make Cling work with Tomcat. &ndash;&gt;-->
+<!--            &lt;!&ndash; Don't upgrade this unless you can test UPnP/DLNA support properly! &ndash;&gt;-->
+<!--            <version>2.0.1</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>org.fourthline.cling</groupId>-->
+<!--            <artifactId>cling-support</artifactId>-->
+<!--            &lt;!&ndash; Cling removed the org.fourthline.cling.transport.impl.apache package in 2.1, which is needed to make Cling work with Tomcat. &ndash;&gt;-->
+<!--            &lt;!&ndash; Don't upgrade this unless you can test UPnP/DLNA support properly! &ndash;&gt;-->
+<!--            <version>2.0.1</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>org.seamless</groupId>-->
+<!--            <artifactId>seamless-util</artifactId>-->
+<!--            <version>1.1.0</version>-->
+<!--        </dependency>-->
 
         <dependency>
-            <groupId>org.fourthline.cling</groupId>
-            <artifactId>cling-support</artifactId>
-            <!-- Cling removed the org.fourthline.cling.transport.impl.apache package in 2.1, which is needed to make Cling work with Tomcat. -->
-            <!-- Don't upgrade this unless you can test UPnP/DLNA support properly! -->
-            <version>2.0.1</version>
+            <groupId>org.jupnp</groupId>
+            <artifactId>org.jupnp</artifactId>
+            <version>3.0.1</version>
         </dependency>
-
         <dependency>
-            <groupId>org.seamless</groupId>
-            <artifactId>seamless-util</artifactId>
-            <version>1.1.0</version>
+            <groupId>org.jupnp</groupId>
+            <artifactId>org.jupnp.support</artifactId>
+            <version>3.0.1</version>
         </dependency>
 
         <dependency>
@@ -361,23 +396,7 @@
         <!-- SONOS API / WSDL SUPPORT -->
         <dependency>
             <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-http</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-web</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
         </dependency>
 
         <dependency>
@@ -398,7 +417,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-configuration2</artifactId>
-            <version>2.8.0</version>
+            <version>2.10.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -410,7 +429,7 @@
         <dependency>
             <groupId>com.mattbertolini</groupId>
             <artifactId>liquibase-slf4j</artifactId>
-            <version>4.0.0</version>
+            <version>5.0.0</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -428,12 +447,22 @@
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-text</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
-            <version>3.6.0</version>
+            <version>3.9.6</version>
         </dependency>
 
         <dependency>
@@ -460,6 +489,10 @@
                 <exclusion>
                     <groupId>commons-collections</groupId>
                     <artifactId>commons-collections</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -494,11 +527,6 @@
         </dependency>
 
         <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -520,13 +548,13 @@
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
+            <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
          </dependency>
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>jakarta.mail</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.sun.mail</groupId>-->
+<!--            <artifactId>jakarta.mail</artifactId>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
@@ -551,47 +579,69 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
             <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.checkerframework</groupId>
+                    <artifactId>checker-qual</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-fileupload2-core</artifactId>
+            <version>2.0.0-M1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
     <build>
         <finalName>airsonic</finalName>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <configuration>
-                    <language>jsp</language>
-                    <rulesets>
-                        <ruleset>/category/jsp/codestyle.xml</ruleset>
-                        <ruleset>/category/jsp/errorprone.xml</ruleset>
-                    </rulesets>
-                    <includes>
-                        <include>**/*.jsp</include>
-                        <include>**/*.jspf</include>
-                    </includes>
-                    <compileSourceRoots>
-                        <compileSourceRoot>${basedir}/src/main/webapp/WEB-INF/jsp</compileSourceRoot>
-                    </compileSourceRoots>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-checkstyle-plugin</artifactId>-->
+<!--            </plugin>-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-pmd-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <language>jsp</language>-->
+<!--                    <rulesets>-->
+<!--                        <ruleset>/category/jsp/codestyle.xml</ruleset>-->
+<!--                        <ruleset>/category/jsp/errorprone.xml</ruleset>-->
+<!--                    </rulesets>-->
+<!--                    <includes>-->
+<!--                        <include>**/*.jsp</include>-->
+<!--                        <include>**/*.jspf</include>-->
+<!--                    </includes>-->
+<!--                    <compileSourceRoots>-->
+<!--                        <compileSourceRoot>${basedir}/src/main/webapp/WEB-INF/jsp</compileSourceRoot>-->
+<!--                    </compileSourceRoots>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -655,9 +705,9 @@
             </plugin>
             <plugin>
                 <!-- Change to non-snapshot version once it is released (change groupId) -->
-                <groupId>com.github.m50d</groupId>
+                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>aspectj-maven-plugin</artifactId>
-                <version>1.11.1</version>
+                <version>1.15.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -683,31 +733,31 @@
                     <dependency>
                         <groupId>org.aspectj</groupId>
                         <artifactId>aspectjtools</artifactId>
-                        <version>1.9.5</version>
+                        <version>1.9.22</version>
                     </dependency>
                 </dependencies>
             </plugin>
-            <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-jspc-maven-plugin</artifactId>
-                <version>9.4.41.v20210516</version>
-                <executions>
-                    <execution>
-                        <id>jspc</id>
-                        <goals>
-                            <goal>jspc</goal>
-                        </goals>
-                        <phase>compile</phase>
-                        <configuration>
-                            <!-- Since we are using spring boot - we do not have a web.xml so there is no sense
-                            enabling merging. Furthermore, we output the webXmlFragment to the target/classes
-                            directory such that it will be on the classpath for use during runtime -->
-                            <mergeFragment>false</mergeFragment>
-                            <webXmlFragment>${project.build.outputDirectory}/precompiled-jsp-web.xml</webXmlFragment>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.eclipse.jetty</groupId>-->
+<!--                <artifactId>jetty-jspc-maven-plugin</artifactId>-->
+<!--                <version>11.0.20</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>jspc</id>-->
+<!--                        <goals>-->
+<!--                            <goal>jspc</goal>-->
+<!--                        </goals>-->
+<!--                        <phase>compile</phase>-->
+<!--                        <configuration>-->
+<!--                            &lt;!&ndash; Since we are using spring boot - we do not have a web.xml so there is no sense-->
+<!--                            enabling merging. Furthermore, we output the webXmlFragment to the target/classes-->
+<!--                            directory such that it will be on the classpath for use during runtime &ndash;&gt;-->
+<!--                            <mergeFragment>false</mergeFragment>-->
+<!--                            <webXmlFragment>${project.build.outputDirectory}/precompiled-jsp-web.xml</webXmlFragment>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
     <reporting>
@@ -715,7 +765,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.3.2</version>
             </plugin>
         </plugins>
     </reporting>

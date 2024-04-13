@@ -25,6 +25,8 @@ import com.github.junrar.rarfile.FileHeader;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.MoreFiles;
 import com.google.common.util.concurrent.RateLimiter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.airsonic.player.ajax.UploadInfo;
 import org.airsonic.player.domain.TransferStatus;
 import org.airsonic.player.domain.User;
@@ -32,7 +34,7 @@ import org.airsonic.player.service.PlayerService;
 import org.airsonic.player.service.SecurityService;
 import org.airsonic.player.service.SettingsService;
 import org.airsonic.player.service.StatusService;
-import org.airsonic.player.upload.MonitoredDiskFileItemFactory;
+//import org.airsonic.player.upload.MonitoredDiskFileItemFactory;
 import org.airsonic.player.upload.UploadListener;
 import org.airsonic.player.util.FileUtil;
 import org.airsonic.player.util.LambdaUtils;
@@ -43,9 +45,8 @@ import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.core.*;
+import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +55,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -131,23 +129,24 @@ public class UploadController {
                     new UploadInfo(status.getId(), 0L, status.getBytesTotal()));
 
             // Check that we have a file upload request
-            if (!ServletFileUpload.isMultipartContent(request)) {
+            if (!JakartaServletFileUpload.isMultipartContent(request)) {
                 throw new Exception("Illegal request.");
             }
 
             boolean unzip = false;
 
-            UploadListener listener = new UploadListenerImpl(status, settingsService.getUploadBitrateLimiter(), brokerTemplate);
+//            UploadListener listener = new UploadListenerImpl(status, settingsService.getUploadBitrateLimiter(), brokerTemplate);
+//
+//            FileItemFactory factory = new MonitoredDiskFileItemFactory(listener);
+            ProgressListener listener = new UploadProgressListener(status, settingsService.getUploadBitrateLimiter(), brokerTemplate);
+            FileItemFactory factory = DiskFileItemFactory.builder().get();
+            JakartaServletFileUpload upload = new JakartaServletFileUpload(factory);
+            upload.setProgressListener(listener);
 
-            FileItemFactory factory = new MonitoredDiskFileItemFactory(listener);
-            ServletFileUpload upload = new ServletFileUpload(factory);
-
-            List<?> items = upload.parseRequest(request);
+            List<DiskFileItem> items = upload.parseRequest(request);
 
             // First, look for "dir" and "unzip" parameters.
-            for (Object o : items) {
-                FileItem item = (FileItem) o;
-
+            for (DiskFileItem item : items) {
                 if (item.isFormField() && "dir".equals(item.getFieldName())) {
                     dir = Paths.get(item.getString());
                 } else if (item.isFormField() && "unzip".equals(item.getFieldName())) {
@@ -168,9 +167,7 @@ public class UploadController {
             }
 
             // Look for file items.
-            for (Object o : items) {
-                FileItem item = (FileItem) o;
-
+            for (DiskFileItem item : items) {
                 if (!item.isFormField()) {
                     String fileName = item.getName();
                     if (!fileName.trim().isEmpty()) {
@@ -184,7 +181,7 @@ public class UploadController {
                             continue;
                         }
 
-                        item.write(targetFile.toFile());
+                        item.write(targetFile);
                         uploadedFiles.add(targetFile);
                         LOG.info("Uploaded {} ", targetFile);
 
@@ -279,7 +276,7 @@ public class UploadController {
         // zip files
         if (file.getFileName().toString().toLowerCase().endsWith(".zip")) {
             LOG.info("Trying zip-specific extraction method for {}", file);
-            try (FileChannel channel = FileChannel.open(file); ZipFile zip = new ZipFile(channel)) {
+            try (FileChannel channel = FileChannel.open(file); ZipFile zip = ZipFile.builder().setSeekableByteChannel(channel).get()) {
                 Enumeration<ZipArchiveEntry> entries = zip.getEntries();
                 ZipArchiveEntry entry = null;
                 while (entries.hasMoreElements()) {
@@ -306,7 +303,7 @@ public class UploadController {
         // 7z files
         if (file.getFileName().toString().toLowerCase().endsWith(".7z")) {
             LOG.info("Trying 7z-specific extraction method for {}", file);
-            try (FileChannel channel = FileChannel.open(file); SevenZFile zip = new SevenZFile(channel)) {
+            try (FileChannel channel = FileChannel.open(file); SevenZFile zip = SevenZFile.builder().setSeekableByteChannel(channel).get()) {
                 byte[] buffer = new byte[8042];
                 SevenZArchiveEntry entry = null;
                 while ((entry = zip.getNextEntry()) != null) {
@@ -403,6 +400,43 @@ public class UploadController {
         @Override
         public void bytesRead(long bytesRead) {
             status.addBytesTransferred(bytesRead);
+            broadcast();
+            // Throttle bitrate.
+            rateLimiter.acquire((int) bytesRead);
+        }
+
+        private void broadcast() {
+            long percentDone = 100 * status.getBytesTransferred() / Math.max(1, status.getBytesTotal());
+            // broadcast every 2% (no need to broadcast at every byte read)
+            if (percentDone - lastBroadcastPercentage > 2) {
+                lastBroadcastPercentage = (int) percentDone;
+                CompletableFuture.runAsync(() -> brokerTemplate.convertAndSendToUser(
+                        status.getPlayer().getUsername(),
+                        "/queue/uploads/status",
+                        new UploadInfo(status.getId(), status.getBytesTransferred(), status.getBytesTotal())));
+            }
+        }
+    }
+
+    private class UploadProgressListener implements ProgressListener {
+        private TransferStatus status;
+        private RateLimiter rateLimiter;
+        private SimpMessagingTemplate brokerTemplate;
+
+        private volatile int lastBroadcastPercentage = 0;
+
+        public UploadProgressListener(TransferStatus status, RateLimiter rateLimiter, SimpMessagingTemplate brokerTemplate) {
+            this.status = status;
+            this.rateLimiter = rateLimiter;
+            this.brokerTemplate = brokerTemplate;
+        }
+
+        @Override
+        public void update(long bytesRead, long contentLength, int items) {
+            if (status.getBytesTransferred() == bytesRead) {
+                return;
+            }
+            status.setBytesTransferred(bytesRead);
             broadcast();
             // Throttle bitrate.
             rateLimiter.acquire((int) bytesRead);

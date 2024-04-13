@@ -19,6 +19,7 @@
  */
 package org.airsonic.player.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.airsonic.player.dao.ShareDao;
 import org.airsonic.player.domain.MediaFile;
 import org.airsonic.player.domain.MusicFolder;
@@ -31,8 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import javax.servlet.http.HttpServletRequest;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

@@ -20,6 +20,9 @@
 package org.airsonic.player.controller;
 
 import com.google.common.primitives.Ints;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
 import org.airsonic.player.ajax.LyricsInfo;
 import org.airsonic.player.ajax.LyricsWSController;
 import org.airsonic.player.command.UserSettingsCommand;
@@ -59,9 +62,6 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.subsonic.restapi.*;
 import org.subsonic.restapi.PodcastStatus;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import java.nio.charset.StandardCharsets;

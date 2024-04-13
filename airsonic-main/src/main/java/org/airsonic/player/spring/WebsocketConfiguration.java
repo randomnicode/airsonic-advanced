@@ -1,5 +1,12 @@
 package org.airsonic.player.spring;
 
+import jakarta.servlet.*;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpUpgradeHandler;
+import jakarta.servlet.http.Part;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,32 +22,12 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpUpgradeHandler;
-import javax.servlet.http.Part;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -145,12 +132,12 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
         @Override
         public int getContentLength() {
-            return -1;
+            return getOriginalRequest().getServletRequest().getContentLength();
         }
 
         @Override
         public long getContentLengthLong() {
-            return -1L;
+            return getOriginalRequest().getServletRequest().getContentLengthLong();
         }
 
         @Override
@@ -271,11 +258,6 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
         }
 
         @Override
-        public String getRealPath(String path) {
-            return null;
-        }
-
-        @Override
         public int getRemotePort() {
             return getAddress(() -> Optional.ofNullable(getOriginalRequest().getServletRequest().getRemotePort())
                     .orElse(getOriginalRequest().getRemoteAddress().getPort()), URI::getPort);
@@ -336,6 +318,21 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
         }
 
         @Override
+        public String getRequestId() {
+            return getOriginalRequest().getServletRequest().getRequestId();
+        }
+
+        @Override
+        public String getProtocolRequestId() {
+            return getOriginalRequest().getServletRequest().getProtocolRequestId();
+        }
+
+        @Override
+        public ServletConnection getServletConnection() {
+            return getOriginalRequest().getServletRequest().getServletConnection();
+        }
+
+        @Override
         public String getAuthType() {
             return null;
         }
@@ -376,7 +373,7 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
         @Override
         public String getMethod() {
             return Optional.ofNullable(getOriginalRequest().getServletRequest().getMethod())
-                    .orElse(getOriginalRequest().getMethodValue());
+                    .orElse(getOriginalRequest().getMethod().name());
         }
 
         @Override
@@ -469,11 +466,6 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
         @Override
         public boolean isRequestedSessionIdFromURL() {
             return getOriginalRequest().getServletRequest().isRequestedSessionIdFromURL();
-        }
-
-        @Override
-        public boolean isRequestedSessionIdFromUrl() {
-            return isRequestedSessionIdFromURL();
         }
 
         @Override

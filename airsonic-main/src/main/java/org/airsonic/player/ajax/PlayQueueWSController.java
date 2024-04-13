@@ -1,5 +1,6 @@
 package org.airsonic.player.ajax;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.airsonic.player.domain.PlayQueue;
 import org.airsonic.player.domain.Player;
 import org.airsonic.player.service.NetworkService;
@@ -13,8 +14,6 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
-
-import javax.servlet.http.HttpServletRequest;
 
 import java.util.List;
 

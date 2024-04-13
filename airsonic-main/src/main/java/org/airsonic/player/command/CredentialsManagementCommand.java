@@ -1,5 +1,9 @@
 package org.airsonic.player.command;
 
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.airsonic.player.domain.UserCredential;
 import org.airsonic.player.domain.UserCredential.App;
 import org.airsonic.player.validator.CredentialsManagementValidators.ConsistentPasswordConfirmation;
@@ -8,10 +12,6 @@ import org.airsonic.player.validator.CredentialsManagementValidators.CredentialC
 import org.airsonic.player.validator.CredentialsManagementValidators.CredentialUpdateChecks;
 import org.airsonic.player.validator.CredentialsManagementValidators.EncoderValid;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import java.time.Instant;
 import java.util.Date;

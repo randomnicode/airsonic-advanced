@@ -20,19 +20,12 @@
 package org.airsonic.player.service.scrobbler;
 
 import org.airsonic.player.domain.MediaFile;
-import org.airsonic.player.util.Util;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -47,12 +40,19 @@ public class ListenBrainzScrobbler {
     private static final Logger LOG = LoggerFactory.getLogger(ListenBrainzScrobbler.class);
     private static final int MAX_PENDING_REGISTRATION = 2000;
 
-    private RegistrationThread thread;
-    private final LinkedBlockingQueue<RegistrationData> queue = new LinkedBlockingQueue<RegistrationData>();
-    private final RequestConfig requestConfig = RequestConfig.custom()
-            .setConnectTimeout(15000)
-            .setSocketTimeout(15000)
-            .build();
+    private final LinkedBlockingQueue<RegistrationData> queue = new LinkedBlockingQueue<>(MAX_PENDING_REGISTRATION);
+
+    private Thread thread = Thread.ofVirtual().name("ListenBrainzScrobbler Registration").start(() -> {
+        while (true) {
+            RegistrationData registrationData = null;
+            try {
+                registrationData = queue.take();
+                scrobble(registrationData);
+            } catch (Exception x) {
+                LOG.warn("Error in ListenBrainzScrobbler registration", x);
+            }
+        }
+    });
 
     /**
      * Registers the given media file at listenbrainz.org. This method returns
@@ -64,27 +64,13 @@ public class ListenBrainzScrobbler {
      * @param submission Whether this is a submission or a now playing notification.
      * @param time       Event time, or {@code null} to use current time.
      */
-    public synchronized void register(MediaFile mediaFile, String url, String token, boolean submission, Instant time) {
-        if (thread == null) {
-            thread = new RegistrationThread();
-            thread.start();
-        }
-
-        if (queue.size() >= MAX_PENDING_REGISTRATION) {
-            LOG.warn("ListenBrainz scrobbler queue is full. Ignoring '{}'", mediaFile.getTitle());
-            return;
-        }
-
+    public void register(MediaFile mediaFile, String url, String token, boolean submission, Instant time) {
         RegistrationData registrationData = createRegistrationData(mediaFile, url, token, submission, time);
         if (registrationData == null) {
             return;
         }
 
-        try {
-            queue.put(registrationData);
-        } catch (InterruptedException x) {
-            LOG.warn("Interrupted while queuing ListenBrainz scrobble", x);
-        }
+        queue.offer(registrationData);
     }
 
     private RegistrationData createRegistrationData(MediaFile mediaFile, String url, String token, boolean submission, Instant time) {
@@ -109,7 +95,7 @@ public class ListenBrainzScrobbler {
      *
      * @param registrationData Registration data for the song.
      */
-    private void scrobble(RegistrationData registrationData) throws ClientProtocolException, IOException {
+    private void scrobble(RegistrationData registrationData) throws RestClientException {
         if (registrationData == null || registrationData.token == null) {
             return;
         }
@@ -125,7 +111,7 @@ public class ListenBrainzScrobbler {
     /**
      * Returns if submission succeeds.
      */
-    private boolean submit(RegistrationData registrationData) throws ClientProtocolException, IOException {
+    private boolean submit(RegistrationData registrationData) throws RestClientException {
         Map<String, Object> additional_info = new HashMap<String, Object>();
         additional_info.computeIfAbsent("release_mbid", k -> registrationData.musicBrainzReleaseId);
         additional_info.computeIfAbsent("recording_mbid", k -> registrationData.musicBrainzRecordingId);
@@ -157,67 +143,11 @@ public class ListenBrainzScrobbler {
         payloads.add(payload);
         content.put("payload", payloads);
 
-        String json = Util.toJson(content);
-
-        return executeJsonPostRequest(registrationData.url, registrationData.token, json);
+        restClient.post().uri(registrationData.url).contentType(MediaType.APPLICATION_JSON).header("Authorization", "token " + registrationData.token).body(content).retrieve();
+        return true;
     }
 
-    private boolean executeJsonPostRequest(String url, String token, String json) throws ClientProtocolException, IOException {
-        HttpPost request = new HttpPost(url);
-        request.setEntity(new StringEntity(json, "UTF-8"));
-        request.setHeader("Authorization", "token " + token);
-        request.setHeader("Content-type", "application/json; charset=utf-8");
-
-        return executeRequest(request);
-    }
-
-    private boolean executeRequest(HttpUriRequest request) throws ClientProtocolException, IOException {
-        try (CloseableHttpClient client = HttpClients.createDefault();
-                CloseableHttpResponse resp = client.execute(request);) {
-            boolean ok = resp.getStatusLine().getStatusCode() == 200;
-            if (!ok) {
-                LOG.warn("Failed to execute ListenBrainz request: {}", resp.getEntity().toString());
-            }
-
-            return ok;
-        }
-    }
-
-    private class RegistrationThread extends Thread {
-        private RegistrationThread() {
-            super("ListenBrainzScrobbler Registration");
-        }
-
-        @Override
-        public void run() {
-            while (true) {
-                RegistrationData registrationData = null;
-                try {
-                    registrationData = queue.take();
-                    scrobble(registrationData);
-                } catch (ClientProtocolException x) {
-                } catch (IOException x) {
-                    handleNetworkError(registrationData, x);
-                } catch (Exception x) {
-                    LOG.warn("Error in ListenBrainz registration: " + x.toString());
-                }
-            }
-        }
-
-        private void handleNetworkError(RegistrationData registrationData, Exception error) {
-            try {
-                queue.put(registrationData);
-                LOG.info("ListenBrainz registration for '{}' encountered network error. Will try again later. In queue: {}", registrationData.title, queue.size(), error);
-            } catch (InterruptedException x) {
-                LOG.error("Failed to reschedule ListenBrainz registration for '{}'", registrationData.title, x);
-            }
-            try {
-                sleep(60L * 1000L);  // Wait 60 seconds.
-            } catch (InterruptedException x) {
-                LOG.error("Failed to sleep after ListenBrainz registration failure for '{}'", registrationData.title, x);
-            }
-        }
-    }
+    RestClient restClient = RestClient.create();
 
     private static class RegistrationData {
         private String url;
@@ -232,5 +162,4 @@ public class ListenBrainzScrobbler {
         private Instant time;
         public boolean submission;
     }
-
 }

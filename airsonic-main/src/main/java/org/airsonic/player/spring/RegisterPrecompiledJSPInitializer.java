@@ -1,5 +1,10 @@
 package org.airsonic.player.spring;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletRegistration;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import org.airsonic.player.service.SettingsService;
 import org.airsonic.player.spring.webxmldomain.ServletDef;
 import org.airsonic.player.spring.webxmldomain.ServletMappingDef;
@@ -10,12 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRegistration;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import java.io.InputStream;
 import java.io.SequenceInputStream;

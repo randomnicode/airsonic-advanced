@@ -19,6 +19,7 @@
 
 package org.airsonic.player.service.sonos;
 
+import jakarta.servlet.http.HttpServletRequest;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -34,8 +35,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import javax.servlet.http.HttpServletRequest;
 
 import java.time.LocalDate;
 import java.util.*;

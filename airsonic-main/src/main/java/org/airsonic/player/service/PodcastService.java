@@ -19,6 +19,7 @@
  */
 package org.airsonic.player.service;
 
+import jakarta.annotation.PostConstruct;
 import org.airsonic.player.dao.PodcastDao;
 import org.airsonic.player.domain.CoverArt;
 import org.airsonic.player.domain.CoverArt.EntityType;
@@ -40,29 +41,22 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -358,6 +352,8 @@ public class PodcastService {
         }
     }
 
+    RestClient restClient = RestClient.create();
+
     private void doRefreshChannel(PodcastChannel channel, boolean downloadEpisodes) {
         if (channel.getStatus() == PodcastStatus.DOWNLOADING) {
             LOG.warn("Channel '{}' already refreshing", channel.getTitle());
@@ -366,34 +362,39 @@ public class PodcastService {
         channel.setStatus(PodcastStatus.DOWNLOADING);
         channel.setErrorMessage(null);
         updateChannel(channel);
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(2 * 60 * 1000) // 2 minutes
-                .setSocketTimeout(10 * 60 * 1000) // 10 minutes
-                .build();
-        HttpGet method = new HttpGet(channel.getUrl());
-        method.setConfig(requestConfig);
-        method.addHeader("User-Agent", "Airsonic/" + versionService.getLocalVersion());
-        try (CloseableHttpClient client = HttpClients.createDefault();
-                CloseableHttpResponse response = client.execute(method);
-                InputStream in = response.getEntity().getContent()) {
 
-            Document document = createSAXBuilder().build(in);
-            Element channelElement = document.getRootElement().getChild("channel");
+        try {
+            restClient.get()
+                    .uri(channel.getUrl())
+                    .header("User-Agent", "Airsonic/" + versionService.getLocalVersion())
+                    .exchange((req, res) -> {
+                        if (res.getStatusCode().equals(HttpStatus.OK)) {
+                            try {
+                                Document document = createSAXBuilder().build(res.getBody());
+                                Element channelElement = document.getRootElement().getChild("channel");
 
-            channel.setTitle(StringUtil.removeMarkup(channelElement.getChildTextTrim("title")));
-            channel.setDescription(StringUtil.removeMarkup(channelElement.getChildTextTrim("description")));
-            channel.setImageUrl(sanitizeUrl(getChannelImageUrl(channelElement), false));
-            channel.setErrorMessage(null);
-            MediaFile mediaFile = createChannelDirectory(channel);
-            channel.setMediaFileId(mediaFile.getId());
-            updateChannel(channel);
+                                channel.setTitle(StringUtil.removeMarkup(channelElement.getChildTextTrim("title")));
+                                channel.setDescription(StringUtil.removeMarkup(channelElement.getChildTextTrim("description")));
+                                channel.setImageUrl(sanitizeUrl(getChannelImageUrl(channelElement), false));
+                                channel.setErrorMessage(null);
+                                MediaFile mediaFile = createChannelDirectory(channel);
+                                channel.setMediaFileId(mediaFile.getId());
+                                updateChannel(channel);
 
-            downloadImage(channel);
-            refreshEpisodes(channel, channelElement.getChildren("item"));
-        } catch (Exception x) {
-            LOG.warn("Failed to get/parse RSS file for Podcast channel {}", channel.getUrl(), x);
+                                downloadImage(channel);
+                                refreshEpisodes(channel, channelElement.getChildren("item"));
+                            } catch (Exception e) {
+                                throw new RestClientException("Problem refreshing channel", e);
+                            }
+                            return true;
+                        }
+
+                        throw new RestClientException(res.getStatusCode().toString());
+                    });
+        } catch (Exception e) {
+            LOG.warn("Failed to get/parse RSS file for Podcast channel {}", channel.getUrl(), e);
             channel.setStatus(PodcastStatus.ERROR);
-            channel.setErrorMessage(getErrorMessage(x));
+            channel.setErrorMessage(getErrorMessage(e));
             updateChannel(channel);
             return;
         }
@@ -429,24 +430,26 @@ public class PodcastService {
         MusicFolder folder = mediaFolderService.getMusicFolderById(channelMediaFile.getFolderId());
         Path channelDir = channelMediaFile.getFullPath(folder.getPath());
 
-        HttpGet method = new HttpGet(imageUrl);
-        method.addHeader("User-Agent", "Airsonic/" + versionService.getLocalVersion());
-        try (CloseableHttpClient client = HttpClients.createDefault();
-                CloseableHttpResponse response = client.execute(method);
-                InputStream in = response.getEntity().getContent()) {
-            Path filePath = channelDir.resolve("cover." + getCoverArtSuffix(response));
-            Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
-            coverArtService.upsert(EntityType.MEDIA_FILE, channelMediaFile.getId(), folder.getPath().relativize(filePath).toString(), channelMediaFile.getFolderId(), false);
+        try {
+            restClient.get().uri(imageUrl).header("User-Agent", "Airsonic/" + versionService.getLocalVersion()).exchange((req, res) -> {
+                if (res.getStatusCode().equals(HttpStatus.OK)) {
+                    Path filePath = channelDir.resolve("cover." + getCoverArtSuffix(res.getHeaders().getContentType()));
+                    Files.copy(res.getBody(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                    coverArtService.upsert(EntityType.MEDIA_FILE, channelMediaFile.getId(), folder.getPath().relativize(filePath).toString(), channelMediaFile.getFolderId(), false);
+                    return true;
+                }
+
+                throw new RestClientException(res.getStatusCode().toString());
+            });
         } catch (Exception x) {
             LOG.warn("Failed to download cover art for podcast channel '{}'", channel.getTitle(), x);
         }
     }
 
-    private String getCoverArtSuffix(HttpResponse response) {
+    private String getCoverArtSuffix(MediaType type) {
         String result = null;
-        Header contentTypeHeader = response.getEntity().getContentType();
-        if (contentTypeHeader != null && contentTypeHeader.getValue() != null) {
-            ContentType contentType = ContentType.parse(contentTypeHeader.getValue());
+        if (type != null) {
+            ContentType contentType = ContentType.parse(type.getType());
             String mimeType = contentType.getMimeType();
             result = StringUtil.getSuffix(mimeType);
         }
@@ -611,7 +614,7 @@ public class PodcastService {
 
     private void doDownloadEpisode(PodcastEpisode episode) {
         if (isEpisodeDeleted(episode)) {
-            LOG.info("Podcast {} was deleted. Aborting download.", episode.getUrl());
+            LOG.info("Podcast episode {} was deleted. Aborting download.", episode.getUrl());
             return;
         }
 
@@ -625,72 +628,65 @@ public class PodcastService {
         LOG.info("Starting to download Podcast from {}", episode.getUrl());
 
         PodcastChannel channel = getChannel(episode.getChannelId());
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(2 * 60 * 1000) // 2 minutes
-                .setSocketTimeout(10 * 60 * 1000) // 10 minutes
-                // Workaround HttpClient circular redirects, which some feeds use (with query parameters)
-                .setCircularRedirectsAllowed(true)
-                // Workaround HttpClient not understanding latest RFC-compliant cookie 'expires' attributes
-                .setCookieSpec(CookieSpecs.STANDARD)
-                .build();
-        HttpGet method = new HttpGet(episode.getUrl());
-        method.setConfig(requestConfig);
-        method.addHeader("User-Agent", "Airsonic/" + versionService.getLocalVersion());
         Pair<Path, MusicFolder> episodeFile = createEpisodeFile(channel, episode);
         Path relativeFile = episodeFile.getLeft();
         MusicFolder folder = episodeFile.getRight();
         Path filePath = folder.getPath().resolve(relativeFile);
 
-        try (CloseableHttpClient client = HttpClients.createDefault();
-                CloseableHttpResponse response = client.execute(method);
-                InputStream in = response.getEntity().getContent();
-                OutputStream out = new BufferedOutputStream(Files.newOutputStream(filePath))) {
-
+        try (OutputStream out = new BufferedOutputStream(Files.newOutputStream(filePath))) {
             episode.setBytesDownloaded(0L);
             episode.setErrorMessage(null);
             podcastDao.updateEpisode(episode);
 
-            byte[] buffer = new byte[8192];
-            long bytesDownloaded = 0;
-            int n;
-            long nextLogCount = 30000L;
+            restClient.get().uri(episode.getUrl()).header("User-Agent", "Airsonic/" + versionService.getLocalVersion()).exchange((req, res) -> {
+                if (res.getStatusCode().equals(HttpStatus.OK)) {
+                    byte[] buffer = new byte[8192];
+                    long bytesDownloaded = 0;
+                    int n;
+                    long nextLogCount = 30000L;
 
-            while ((n = in.read(buffer)) != -1) {
-                out.write(buffer, 0, n);
-                bytesDownloaded += n;
+                    while ((n = res.getBody().read(buffer)) != -1) {
+                        out.write(buffer, 0, n);
+                        bytesDownloaded += n;
 
-                if (bytesDownloaded > nextLogCount) {
-                    episode.setBytesDownloaded(bytesDownloaded);
-                    nextLogCount += 30000L;
+                        if (bytesDownloaded > nextLogCount) {
+                            episode.setBytesDownloaded(bytesDownloaded);
+                            nextLogCount += 30000L;
 
-                    // Abort download if episode was deleted by user.
-                    if (isEpisodeDeleted(episode)) {
-                        break;
+                            // Abort download if episode was deleted by user.
+                            if (isEpisodeDeleted(episode)) {
+                                break;
+                            }
+                            podcastDao.updateEpisode(episode);
+                        }
                     }
-                    podcastDao.updateEpisode(episode);
-                }
-            }
 
-            if (isEpisodeDeleted(episode)) {
-                LOG.info("Podcast {} was deleted. Aborting download.", episode.getUrl());
-                FileUtil.closeQuietly(out);
-                FileUtil.delete(filePath);
-            } else {
-                FileUtil.closeQuietly(out);
-                episode.setBytesDownloaded(bytesDownloaded);
-                LOG.info("Downloaded {} bytes from Podcast {}", bytesDownloaded, episode.getUrl());
-                MediaFile file = mediaFileService.getMediaFile(relativeFile, folder);
-                episode.setMediaFileId(file.getId());
-                updateTags(file, folder, episode);
-                episode.setStatus(PodcastStatus.COMPLETED);
-                podcastDao.updateEpisode(episode);
-                deleteObsoleteEpisodes(channel);
-            }
+                    if (isEpisodeDeleted(episode)) {
+                        LOG.info("Podcast {} was deleted. Aborting download.", episode.getUrl());
+                        FileUtil.closeQuietly(out);
+                        FileUtil.delete(filePath);
+                    } else {
+                        FileUtil.closeQuietly(out);
+                        episode.setBytesDownloaded(bytesDownloaded);
+                        LOG.info("Downloaded {} bytes from Podcast {}", bytesDownloaded, episode.getUrl());
+                        MediaFile file = mediaFileService.getMediaFile(relativeFile, folder);
+                        episode.setMediaFileId(file.getId());
+                        updateTags(file, folder, episode);
+                        episode.setStatus(PodcastStatus.COMPLETED);
+                        podcastDao.updateEpisode(episode);
+                        deleteObsoleteEpisodes(channel);
+                    }
+                    return true;
+                }
+
+                throw new RestClientException(res.getStatusCode().toString());
+            });
         } catch (Exception x) {
             LOG.warn("Failed to download Podcast from {}", episode.getUrl(), x);
             episode.setStatus(PodcastStatus.ERROR);
             episode.setErrorMessage(getErrorMessage(x));
             podcastDao.updateEpisode(episode);
+            FileUtil.delete(filePath);
         }
     }
 

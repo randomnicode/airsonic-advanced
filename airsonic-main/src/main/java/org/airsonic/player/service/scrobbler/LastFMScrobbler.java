@@ -20,29 +20,19 @@
 package org.airsonic.player.service.scrobbler;
 
 import org.airsonic.player.domain.MediaFile;
-import org.airsonic.player.util.StringUtil;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -55,13 +45,19 @@ public class LastFMScrobbler {
     private static final Logger LOG = LoggerFactory.getLogger(LastFMScrobbler.class);
     private static final int MAX_PENDING_REGISTRATION = 2000;
 
-    private RegistrationThread thread;
-    private final LinkedBlockingQueue<RegistrationData> queue = new LinkedBlockingQueue<RegistrationData>();
-    private final RequestConfig requestConfig = RequestConfig.custom()
-            .setConnectTimeout(15000)
-            .setSocketTimeout(15000)
-            .build();
+    private final LinkedBlockingQueue<RegistrationData> queue = new LinkedBlockingQueue<>(MAX_PENDING_REGISTRATION);
 
+    private Thread thread = Thread.ofVirtual().name("LastFMScrobbler Registration").start(() -> {
+        while (true) {
+            RegistrationData registrationData = null;
+            try {
+                registrationData = queue.take();
+                scrobble(registrationData);
+            } catch (Exception x) {
+                LOG.warn("Error in Last.fm registration", x);
+            }
+        }
+    });
 
     /**
      * Registers the given media file at www.last.fm. This method returns immediately, the actual registration is done
@@ -73,27 +69,13 @@ public class LastFMScrobbler {
      * @param submission Whether this is a submission or a now playing notification.
      * @param time       Event time, or {@code null} to use current time.
      */
-    public synchronized void register(MediaFile mediaFile, String username, String password, boolean submission, Instant time) {
-        if (thread == null) {
-            thread = new RegistrationThread();
-            thread.start();
-        }
-
-        if (queue.size() >= MAX_PENDING_REGISTRATION) {
-            LOG.warn("Last.fm scrobbler queue is full. Ignoring " + mediaFile);
-            return;
-        }
-
+    public void register(MediaFile mediaFile, String username, String password, boolean submission, Instant time) {
         RegistrationData registrationData = createRegistrationData(mediaFile, username, password, submission, time);
         if (registrationData == null) {
             return;
         }
 
-        try {
-            queue.put(registrationData);
-        } catch (InterruptedException x) {
-            LOG.warn("Interrupted while queuing Last.fm scrobble: " + x.toString());
-        }
+        queue.offer(registrationData);
     }
 
     private RegistrationData createRegistrationData(MediaFile mediaFile, String username, String password, boolean submission, Instant time) {
@@ -115,7 +97,7 @@ public class LastFMScrobbler {
      *
      * @param registrationData Registration data for the song.
      */
-    private void scrobble(RegistrationData registrationData) throws URISyntaxException, ClientProtocolException, IOException {
+    private void scrobble(RegistrationData registrationData) throws URISyntaxException, RestClientException {
         if (registrationData == null) {
             return;
         }
@@ -135,13 +117,10 @@ public class LastFMScrobbler {
             lines = registerNowPlaying(registrationData, sessionId, nowPlayingUrl);
         }
 
-        if (lines[0].startsWith("FAILED")) {
-            LOG.warn("Failed to scrobble song '" + registrationData.title + "' at Last.fm: " + lines[0]);
-        } else if (lines[0].startsWith("BADSESSION")) {
-            LOG.warn("Failed to scrobble song '" + registrationData.title + "' at Last.fm.  Invalid session.");
-        } else if (lines[0].startsWith("OK")) {
-            LOG.info("Successfully registered " + (registrationData.submission ? "submission" : "now playing") +
-                      " for song '" + registrationData.title + "' for user " + registrationData.username + " at Last.fm: " + registrationData.time);
+        if (lines[0].startsWith("OK")) {
+            LOG.info("Successfully registered {} for song '{}' for user {} at Last.fm: {}", (registrationData.submission ? "submission" : "now playing"), registrationData.title, registrationData.username, registrationData.time);
+        } else {
+            LOG.warn("Failed to scrobble song '{}' at Last.fm: {}", registrationData.title, lines[0]);
         }
     }
 
@@ -155,7 +134,7 @@ public class LastFMScrobbler {
      * <p/>
      * If authentication fails, <code>null</code> is returned.
      */
-    private String[] authenticate(RegistrationData registrationData) throws URISyntaxException, ClientProtocolException, IOException {
+    private String[] authenticate(RegistrationData registrationData) throws URISyntaxException, RestClientException {
         String clientId = "sub";
         String clientVersion = "0.1";
         long timestamp = System.currentTimeMillis() / 1000L;
@@ -168,60 +147,44 @@ public class LastFMScrobbler {
                         timestamp, authToken),
                 /* fragment= */ null);
 
-        String[] lines = executeGetRequest(uri);
-
-        if (lines[0].startsWith("BANNED")) {
-            LOG.warn("Failed to scrobble song '" + registrationData.title + "' at Last.fm. Client version is banned.");
-            return null;
-        }
-
-        if (lines[0].startsWith("BADAUTH")) {
-            LOG.warn("Failed to scrobble song '" + registrationData.title + "' at Last.fm. Wrong username or password.");
-            return null;
-        }
-
-        if (lines[0].startsWith("BADTIME")) {
-            LOG.warn("Failed to scrobble song '" + registrationData.title + "' at Last.fm. Bad timestamp, please check local clock.");
-            return null;
-        }
-
-        if (lines[0].startsWith("FAILED")) {
-            LOG.warn("Failed to scrobble song '" + registrationData.title + "' at Last.fm: " + lines[0]);
-            return null;
-        }
+        String response = restClient.get()
+                .uri(uri)
+                .retrieve()
+                .body(String.class);
+        String[] lines = response.split("\\r?\\n");
 
         if (!lines[0].startsWith("OK")) {
-            LOG.warn("Failed to scrobble song '" + registrationData.title + "' at Last.fm.  Unknown response: " + lines[0]);
+            LOG.warn("Failed to authenticate with Last.fm. Response: {}", registrationData.title, lines[0]);
             return null;
         }
 
         return lines;
     }
 
-    private String[] registerSubmission(RegistrationData registrationData, String sessionId, String url) throws UnsupportedEncodingException, ClientProtocolException, IOException {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("s", sessionId);
-        params.put("a[0]", registrationData.artist);
-        params.put("t[0]", registrationData.title);
-        params.put("i[0]", String.valueOf(registrationData.time.getEpochSecond()));
-        params.put("o[0]", "P");
-        params.put("r[0]", "");
-        params.put("l[0]", String.valueOf(registrationData.duration));
-        params.put("b[0]", registrationData.album);
-        params.put("n[0]", "");
-        params.put("m[0]", "");
+    private String[] registerSubmission(RegistrationData registrationData, String sessionId, String url) throws RestClientException {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("s", sessionId);
+        params.add("a[0]", registrationData.artist);
+        params.add("t[0]", registrationData.title);
+        params.add("i[0]", String.valueOf(registrationData.time.getEpochSecond()));
+        params.add("o[0]", "P");
+        params.add("r[0]", "");
+        params.add("l[0]", String.valueOf(registrationData.duration));
+        params.add("b[0]", registrationData.album);
+        params.add("n[0]", "");
+        params.add("m[0]", "");
         return executePostRequest(url, params);
     }
 
-    private String[] registerNowPlaying(RegistrationData registrationData, String sessionId, String url) throws UnsupportedEncodingException, ClientProtocolException, IOException {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("s", sessionId);
-        params.put("a", registrationData.artist);
-        params.put("t", registrationData.title);
-        params.put("b", registrationData.album);
-        params.put("l", String.valueOf(registrationData.duration));
-        params.put("n", "");
-        params.put("m", "");
+    private String[] registerNowPlaying(RegistrationData registrationData, String sessionId, String url) throws RestClientException {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("s", sessionId);
+        params.add("a", registrationData.artist);
+        params.add("t", registrationData.title);
+        params.add("b", registrationData.album);
+        params.add("l", String.valueOf(registrationData.duration));
+        params.add("n", "");
+        params.add("m", "");
         return executePostRequest(url, params);
     }
 
@@ -229,66 +192,16 @@ public class LastFMScrobbler {
         return DigestUtils.md5Hex(DigestUtils.md5Hex(password) + timestamp);
     }
 
-    private String[] executeGetRequest(URI url) throws IOException, ClientProtocolException {
-        HttpGet method = new HttpGet(url);
-        method.setConfig(requestConfig);
-        return executeRequest(method);
-    }
+    RestClient restClient = RestClient.create();
 
-    private String[] executePostRequest(String url, Map<String, String> parameters) throws UnsupportedEncodingException, ClientProtocolException, IOException {
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        for (Map.Entry<String, String> entry : parameters.entrySet()) {
-            params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-        }
-
-        HttpPost request = new HttpPost(url);
-        request.setEntity(new UrlEncodedFormEntity(params, StringUtil.ENCODING_UTF8));
-        request.setConfig(requestConfig);
-        return executeRequest(request);
-    }
-
-    private String[] executeRequest(HttpUriRequest request) throws ClientProtocolException, IOException {
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            ResponseHandler<String> responseHandler = new BasicResponseHandler();
-            String response = client.execute(request, responseHandler);
-            return response.split("\\r?\\n");
-        }
-    }
-
-    private class RegistrationThread extends Thread {
-        private RegistrationThread() {
-            super("LastFMScrobbler Registration");
-        }
-
-        @Override
-        public void run() {
-            while (true) {
-                RegistrationData registrationData = null;
-                try {
-                    registrationData = queue.take();
-                    scrobble(registrationData);
-                } catch (IOException x) {
-                    handleNetworkError(registrationData, x.toString());
-                } catch (Exception x) {
-                    LOG.warn("Error in Last.fm registration: " + x.toString());
-                }
-            }
-        }
-
-        private void handleNetworkError(RegistrationData registrationData, String errorMessage) {
-            try {
-                queue.put(registrationData);
-                LOG.info("Last.fm registration for '" + registrationData.title +
-                         "' encountered network error: " + errorMessage + ".  Will try again later. In queue: " + queue.size());
-            } catch (InterruptedException x) {
-                LOG.error("Failed to reschedule Last.fm registration for '" + registrationData.title + "': " + x.toString());
-            }
-            try {
-                sleep(60L * 1000L);  // Wait 60 seconds.
-            } catch (InterruptedException x) {
-                LOG.error("Failed to sleep after Last.fm registration failure for '" + registrationData.title + "': " + x.toString());
-            }
-        }
+    private String[] executePostRequest(String url, MultiValueMap<String, String> parameters) throws RestClientException {
+        String response = restClient.post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(new HttpEntity<>(parameters))
+                .retrieve()
+                .body(String.class);
+        return response.split("\\r?\\n");
     }
 
     private static class RegistrationData {

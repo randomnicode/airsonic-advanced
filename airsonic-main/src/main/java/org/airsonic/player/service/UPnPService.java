@@ -19,37 +19,36 @@
  */
 package org.airsonic.player.service;
 
+import jakarta.annotation.PostConstruct;
 import org.airsonic.player.service.upnp.CustomContentDirectory;
 import org.airsonic.player.service.upnp.MSMediaReceiverRegistrarService;
 import org.airsonic.player.util.FileUtil;
-import org.fourthline.cling.DefaultUpnpServiceConfiguration;
-import org.fourthline.cling.UpnpService;
-import org.fourthline.cling.UpnpServiceImpl;
-import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
-import org.fourthline.cling.model.DefaultServiceManager;
-import org.fourthline.cling.model.meta.*;
-import org.fourthline.cling.model.types.DLNADoc;
-import org.fourthline.cling.model.types.DeviceType;
-import org.fourthline.cling.model.types.UDADeviceType;
-import org.fourthline.cling.model.types.UDN;
-import org.fourthline.cling.support.connectionmanager.ConnectionManagerService;
-import org.fourthline.cling.support.model.ProtocolInfos;
-import org.fourthline.cling.support.model.dlna.DLNAProfiles;
-import org.fourthline.cling.support.model.dlna.DLNAProtocolInfo;
-import org.fourthline.cling.transport.impl.apache.StreamClientConfigurationImpl;
-import org.fourthline.cling.transport.impl.apache.StreamClientImpl;
-import org.fourthline.cling.transport.impl.apache.StreamServerConfigurationImpl;
-import org.fourthline.cling.transport.impl.apache.StreamServerImpl;
-import org.fourthline.cling.transport.spi.NetworkAddressFactory;
-import org.fourthline.cling.transport.spi.StreamClient;
-import org.fourthline.cling.transport.spi.StreamServer;
+import org.jupnp.DefaultUpnpServiceConfiguration;
+import org.jupnp.UpnpService;
+import org.jupnp.UpnpServiceImpl;
+import org.jupnp.binding.annotations.AnnotationLocalServiceBinder;
+import org.jupnp.model.DefaultServiceManager;
+import org.jupnp.model.meta.*;
+import org.jupnp.model.types.DLNADoc;
+import org.jupnp.model.types.DeviceType;
+import org.jupnp.model.types.UDADeviceType;
+import org.jupnp.model.types.UDN;
+import org.jupnp.support.connectionmanager.ConnectionManagerService;
+import org.jupnp.support.model.ProtocolInfos;
+import org.jupnp.support.model.dlna.DLNAProfiles;
+import org.jupnp.support.model.dlna.DLNAProtocolInfo;
+//import org.jupnp.transport.impl.apache.StreamClientConfigurationImpl;
+//import org.jupnp.transport.impl.apache.StreamClientImpl;
+//import org.jupnp.transport.impl.apache.StreamServerConfigurationImpl;
+//import org.jupnp.transport.impl.apache.StreamServerImpl;
+import org.jupnp.transport.spi.NetworkAddressFactory;
+import org.jupnp.transport.spi.StreamClient;
+import org.jupnp.transport.spi.StreamServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -243,14 +242,14 @@ public class UPnPService {
             super(streamListenPort);
         }
 
-        @Override
-        public StreamClient<?> createStreamClient() {
-            return new StreamClientImpl(new StreamClientConfigurationImpl(getSyncProtocolExecutorService()));
-        }
-
-        @Override
-        public StreamServer<?> createStreamServer(NetworkAddressFactory networkAddressFactory) {
-            return new StreamServerImpl(new StreamServerConfigurationImpl(networkAddressFactory.getStreamListenPort()));
-        }
+//        @Override
+//        public StreamClient<?> createStreamClient() {
+//            return new StreamClientImpl(new StreamClientConfigurationImpl(getSyncProtocolExecutorService()));
+//        }
+//
+//        @Override
+//        public StreamServer<?> createStreamServer(NetworkAddressFactory networkAddressFactory) {
+//            return new StreamServerImpl(new StreamServerConfigurationImpl(networkAddressFactory.getStreamListenPort()));
+//        }
     }
 }

@@ -6,18 +6,14 @@ import org.airsonic.player.domain.UserSettings;
 import org.airsonic.player.service.SecurityService;
 import org.airsonic.player.service.SettingsService;
 import org.airsonic.player.service.VersionService;
-import org.airsonic.player.util.Util;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Instant;
@@ -38,6 +34,8 @@ public class PodcastIndexService {
 
     private static final String DEFAULT_URL = "https://api.podcastindex.org/api/1.0/search/byterm";
 
+    RestClient restClient = RestClient.create();
+
     public List<PodcastIndexResponse.PodcastIndexResult> search(String username, String search) throws Exception {
         UserSettings userSettings = settingsService.getUserSettings(username);
 
@@ -51,45 +49,32 @@ public class PodcastIndexService {
         if (cred != null) {
             String decoded = SecurityService.decodeCredentials(cred);
             if (decoded != null) {
-                HttpUriRequest req = createRequest(
-                        UriComponentsBuilder
-                                .fromHttpUrl(StringUtils.isBlank(userSettings.getPodcastIndexUrl()) ? DEFAULT_URL
-                                        : userSettings.getPodcastIndexUrl())
-                                .queryParam("q", search).toUriString(),
-                        cred.getAppUsername(), decoded);
-                PodcastIndexResponse resp = executeRequest(req);
-                if (req != null) {
+                String now = String.valueOf(Instant.now().getEpochSecond());
+                PodcastIndexResponse resp = null;
+                try {
+                    resp = restClient.post()
+                            .uri(
+                                UriComponentsBuilder
+                                        .fromHttpUrl(StringUtils.isBlank(userSettings.getPodcastIndexUrl()) ? DEFAULT_URL : userSettings.getPodcastIndexUrl())
+                                        .queryParam("q", search)
+                                        .build().toUri())
+                            .header("User-Agent", "Airsonic/" + versionService.getLocalVersion())
+                            .header("X-Auth-Key", cred.getAppUsername())
+                            .header("X-Auth-Date", now)
+                            .header("Authorization", DigestUtils.sha1Hex(cred.getAppUsername() + decoded + now))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .retrieve().body(PodcastIndexResponse.class);
+                } catch (Exception e) {
+                    LOG.warn("Failed to execute PodcastIndex request: {}", search, e);
+                }
+
+                if (resp != null) {
                     return resp.getFeeds();
                 }
             }
         }
 
         return Collections.emptyList();
-    }
-
-    private HttpUriRequest createRequest(String url, String apiKey, String apiSecret) {
-        HttpPost request = new HttpPost(url);
-        request.setHeader("User-Agent", "Airsonic/" + versionService.getLocalVersion());
-        request.setHeader("X-Auth-Key", apiKey);
-        String now = String.valueOf(Instant.now().getEpochSecond());
-        request.setHeader("X-Auth-Date", now);
-        request.setHeader("Authorization", DigestUtils.sha1Hex(apiKey + apiSecret + now));
-        request.setHeader("Content-Type", "application/json; charset=utf-8");
-
-        return request;
-    }
-
-    private PodcastIndexResponse executeRequest(HttpUriRequest request) throws Exception {
-        try (CloseableHttpClient client = HttpClients.createDefault();
-                CloseableHttpResponse resp = client.execute(request);) {
-            boolean ok = resp.getStatusLine().getStatusCode() == 200;
-            if (!ok) {
-                LOG.warn("Failed to execute PodcastIndex request: {}", resp.getEntity().toString());
-                return null;
-            } else {
-                return Util.getObjectMapper().readValue(resp.getEntity().getContent(), PodcastIndexResponse.class);
-            }
-        }
     }
 
     // from https://podcastindex-org.github.io/docs-api/#get-/search/byterm

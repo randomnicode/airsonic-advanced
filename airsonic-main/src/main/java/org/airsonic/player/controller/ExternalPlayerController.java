@@ -20,6 +20,8 @@
 package org.airsonic.player.controller;
 
 import com.google.common.io.MoreFiles;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.airsonic.player.domain.*;
 import org.airsonic.player.security.JWTAuthenticationToken;
 import org.airsonic.player.service.*;
@@ -35,9 +37,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import java.nio.file.Files;
 import java.time.Instant;

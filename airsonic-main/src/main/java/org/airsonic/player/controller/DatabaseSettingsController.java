@@ -19,6 +19,7 @@
  */
 package org.airsonic.player.controller;
 
+import jakarta.annotation.PostConstruct;
 import org.airsonic.player.command.DatabaseSettingsCommand;
 import org.airsonic.player.command.DatabaseSettingsCommand.DataSourceConfigType;
 import org.airsonic.player.domain.Player;
@@ -55,8 +56,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.annotation.PostConstruct;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;

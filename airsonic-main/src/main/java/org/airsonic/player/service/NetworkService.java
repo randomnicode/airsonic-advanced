@@ -19,6 +19,7 @@
  */
 package org.airsonic.player.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.airsonic.player.spring.WebsocketConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,8 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UrlPathHelper;
-
-import javax.servlet.http.HttpServletRequest;
 
 import java.net.MalformedURLException;
 import java.net.URI;

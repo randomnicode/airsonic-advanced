@@ -10,20 +10,17 @@ import org.airsonic.player.service.MediaFileService;
 import org.airsonic.player.service.MediaFolderService;
 import org.airsonic.player.service.SecurityService;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -69,14 +66,9 @@ public class CoverArtWSController {
         }
     }
 
-    private void saveCoverArt(MediaFile dir, String url) throws Exception {
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(20 * 1000) // 20 seconds
-                .setSocketTimeout(20 * 1000) // 20 seconds
-                .build();
-        HttpGet method = new HttpGet(url);
-        method.setConfig(requestConfig);
+    RestClient restClient = RestClient.create();
 
+    private void saveCoverArt(MediaFile dir, String url) throws Exception {
         // Attempt to resolve proper suffix.
         String suffix = "jpg";
         if (url.toLowerCase().endsWith(".gif")) {
@@ -89,20 +81,24 @@ public class CoverArtWSController {
         MusicFolder folder = mediaFolderService.getMusicFolderById(dir.getFolderId());
         Path fullPath = dir.getFullPath(folder.getPath());
         Path newCoverFile = fullPath.resolve("cover." + suffix);
+        Path backupCoverFile = fullPath.resolve("cover." + suffix + ".backup");
         if (!securityService.isWriteAllowed(folder.getPath().relativize(newCoverFile), folder)) {
             throw new SecurityException("Permission denied: " + StringEscapeUtils.escapeHtml(newCoverFile.toString()));
         }
 
-        try (CloseableHttpClient client = HttpClients.createDefault();
-                CloseableHttpResponse response = client.execute(method);
-                InputStream input = response.getEntity().getContent()) {
+        restClient.get().uri(url).exchange((req, res) -> {
+            if (res.getStatusCode().equals(HttpStatus.OK)) {
+                // If file exists, create a backup.
+                backup(newCoverFile, backupCoverFile);
 
-            // If file exists, create a backup.
-            backup(newCoverFile, fullPath.resolve("cover." + suffix + ".backup"));
+                // Write file.
+                Files.copy(res.getBody(), newCoverFile, StandardCopyOption.REPLACE_EXISTING);
 
-            // Write file.
-            Files.copy(input, newCoverFile, StandardCopyOption.REPLACE_EXISTING);
-        }
+                return true;
+            }
+
+            return false;
+        });
 
         coverArtService.upsert(EntityType.MEDIA_FILE, dir.getId(), folder.getPath().relativize(newCoverFile).toString(), dir.getFolderId(), true);
     }

@@ -19,22 +19,16 @@
  */
 package org.airsonic.player.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.airsonic.player.domain.Version;
-import org.airsonic.player.util.Util;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.impl.client.AbstractResponseHandler;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 import java.io.*;
 import java.time.Instant;
@@ -207,15 +201,6 @@ public class VersionService {
 
     private static final String VERSION_URL = "https://api.github.com/repos/airsonic-advanced/airsonic-advanced/releases";
 
-    private static ResponseHandler<List<Map<String, Object>>> respHandler = new AbstractResponseHandler<List<Map<String,Object>>>() {
-        @Override
-        public List<Map<String, Object>> handleEntity(HttpEntity entity) throws IOException {
-            try (InputStream is = entity.getContent(); InputStream bis = new BufferedInputStream(is)) {
-                return Util.getObjectMapper().readValue(bis, new TypeReference<List<Map<String, Object>>>() {});
-            }
-        }
-    };
-
     private static Function<Map<String,Object>, Version> releaseToVersionMapper = r ->
             new Version(
                     (String) r.get("tag_name"),
@@ -230,29 +215,24 @@ public class VersionService {
     /**
      * Resolves the latest available Airsonic version by inspecting github.
      */
+    RestClient restClient = RestClient.create();
     private void readLatestVersion() throws IOException {
-
         LOG.debug("Starting to read latest version");
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(10000)
-                .setSocketTimeout(10000)
-                .build();
-        HttpGet method = new HttpGet(VERSION_URL);
-        method.setConfig(requestConfig);
-        method.setHeader("accept", "application/vnd.github.v3+json");
-        method.setHeader("User-Agent", "Airsonic/" + getLocalVersion());
+
         List<Map<String, Object>> content;
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            content = client.execute(method, respHandler);
-        } catch (ConnectTimeoutException e) {
-            LOG.warn("Got a timeout when trying to reach {}", VERSION_URL);
+        try {
+            content = restClient.get().uri(VERSION_URL)
+                    .header("User-Agent", "Airsonic/" + getLocalVersion())
+                    .accept(MediaType.parseMediaType("application/vnd.github+json"))
+                    .retrieve().body(new ParameterizedTypeReference<>() {});
+        } catch (RestClientException rce) {
+            LOG.warn("Exception when trying to reach {}", VERSION_URL, rce);
             return;
         }
 
         List<Map<String, Object>> releases = content.stream()
                 .sorted(Comparator.<Map<String, Object>,Instant>comparing(r -> Instant.parse((String) r.get("published_at")), Comparator.reverseOrder()))
                 .collect(Collectors.toList());
-
 
         Optional<Map<String, Object>> betaR = releases.stream().findFirst();
         Optional<Map<String, Object>> finalR = releases.stream().filter(x -> !((Boolean)x.get("draft")) && !((Boolean)x.get("prerelease"))).findFirst();

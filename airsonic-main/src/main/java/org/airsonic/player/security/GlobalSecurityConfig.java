@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.io.BaseEncoding;
+import jakarta.servlet.ServletContext;
 import org.airsonic.player.service.JWTSecurityService;
 import org.airsonic.player.service.SecurityService;
 import org.airsonic.player.service.SettingsService;
@@ -20,10 +21,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,6 +34,7 @@ import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -40,8 +43,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import javax.servlet.ServletContext;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +50,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.airsonic.player.security.MultipleCredsMatchingAuthenticationProvider.SALT_TOKEN_MECHANISM_SPECIALIZATION;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
 @Order(SecurityProperties.BASIC_AUTH_ORDER - 2)
@@ -61,17 +63,14 @@ public class GlobalSecurityConfig {
 
     @SuppressWarnings("deprecation")
     public static final Map<String, PasswordEncoder> ENCODERS = new HashMap<>(ImmutableMap
-            .<String, PasswordEncoder>builderWithExpectedSize(19)
+            .<String, PasswordEncoder>builderWithExpectedSize(16)
             .put("bcrypt", new BCryptPasswordEncoder())
             .put("ldap", new org.springframework.security.crypto.password.LdapShaPasswordEncoder())
             .put("MD4", new org.springframework.security.crypto.password.Md4PasswordEncoder())
             .put("MD5", new org.springframework.security.crypto.password.MessageDigestPasswordEncoder("MD5"))
-            .put("pbkdf2", new Pbkdf2PasswordEncoder())
-            .put("scrypt", new SCryptPasswordEncoder())
             .put("SHA-1", new org.springframework.security.crypto.password.MessageDigestPasswordEncoder("SHA-1"))
             .put("SHA-256", new org.springframework.security.crypto.password.MessageDigestPasswordEncoder("SHA-256"))
             .put("sha256", new org.springframework.security.crypto.password.StandardPasswordEncoder())
-            .put("argon2", new Argon2PasswordEncoder())
 
             // base decodable encoders
             .put("noop", new PasswordEncoderDecoderWrapper(org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance(), p -> p))
@@ -210,134 +209,99 @@ public class GlobalSecurityConfig {
         auth.authenticationProvider(multipleCredsProvider);
     }
 
-    @Configuration
-    @Order(1)
-    public class ExtSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-        public ExtSecurityConfiguration() {
-            super(true);
-        }
-
-        @Override
-        @Bean
-        public AuthenticationManager authenticationManagerBean() throws Exception {
-            return super.authenticationManagerBean();
-        }
-
-        @Bean(name = "jwtAuthenticationFilter")
-        public JWTRequestParameterProcessingFilter jwtAuthFilter() throws Exception {
-            return new JWTRequestParameterProcessingFilter(authenticationManager(), FAILURE_URL);
-        }
-
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-
-            http = http.addFilter(new WebAsyncManagerIntegrationFilter());
-            http = http.addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
-
-            http
-                    .antMatcher("/ext/**")
-                    .csrf()
-                    // .disable()
-                    .requireCsrfProtectionMatcher(csrfSecurityRequestMatcher).and()
-                    .headers().frameOptions().sameOrigin().and()
-                    .authorizeRequests()
-                    .antMatchers(
-                            "/ext/stream/**",
-                            "/ext/coverArt*",
-                            "/ext/share/**",
-                            "/ext/hls/**",
-                            "/ext/captions**")
-                    .hasAnyRole("TEMP", "USER").and()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).sessionFixation().none().and()
-                    .exceptionHandling().and()
-                    .securityContext().and()
-                    .requestCache().and()
-                    .anonymous().and()
-                    .servletApi();
-        }
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class).build();
     }
 
-    @Configuration
+    @Bean
+    @Order(1)
+    public SecurityFilterChain extFilter(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+        http.addFilter(new WebAsyncManagerIntegrationFilter());
+        http.addFilterBefore(new JWTRequestParameterProcessingFilter(authenticationManager, FAILURE_URL), UsernamePasswordAuthenticationFilter.class);
+
+        http
+                .securityMatcher("/ext/**")
+                .csrf(csrf -> csrf.requireCsrfProtectionMatcher(csrfSecurityRequestMatcher))
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/ext/stream/**", "/ext/coverArt*", "/ext/share/**", "/ext/hls/**", "/ext/captions**")
+                        .hasAnyRole("TEMP", "USER")
+                )
+                .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS).sessionFixation(sessionFixationConfigurer -> sessionFixationConfigurer.none()))
+                .exceptionHandling(Customizer.withDefaults())
+                .securityContext(Customizer.withDefaults())
+                .requestCache(Customizer.withDefaults())
+                .anonymous(Customizer.withDefaults())
+                .servletApi(Customizer.withDefaults());
+
+        return http.build();
+    }
+
+    @Bean
     @Order(2)
-    public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+    public SecurityFilterChain intFilter(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+        RESTRequestParameterProcessingFilter restAuthenticationFilter = new RESTRequestParameterProcessingFilter();
+        restAuthenticationFilter.setAuthenticationManager(authenticationManager);
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            RESTRequestParameterProcessingFilter restAuthenticationFilter = new RESTRequestParameterProcessingFilter();
-            restAuthenticationFilter.setAuthenticationManager(authenticationManagerBean());
-
-            // Try to load the 'remember me' key.
-            //
-            // Note that using a fixed key compromises security as perfect
-            // forward secrecy is not guaranteed anymore.
-            //
-            // An external entity can then re-use our authentication cookies before
-            // the expiration time, or even, given enough time, recover the password
-            // from the MD5 hash.
-            //
-            // A null key means an ephemeral key is autogenerated
-            String rememberMeKey = settingsService.getRememberMeKey();
-            if (rememberMeKey != null) {
-                LOG.info("Using a fixed 'remember me' key from properties, this is insecure.");
-            }
-
-            http
-                    .cors()
-                    .and()
-                    //.addFilterBefore(restAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                    .httpBasic()
-                    .and()
-                    .addFilterAfter(restAuthenticationFilter, BasicAuthenticationFilter.class)
-                    .csrf()
-                    .ignoringAntMatchers("/ws/Sonos/**")
-                    .requireCsrfProtectionMatcher(csrfSecurityRequestMatcher)
-                    .and()
-                    .headers()
-                    .frameOptions()
-                    .sameOrigin()
-                    .and().authorizeRequests()
-                    .antMatchers("/recover*", "/accessDenied*", "/style/**", "/icons/**", "/flash/**", "/script/**",
-                            "/login", "/error", "/sonos/**", "/sonoslink/**", "/ws/Sonos/**")
-                    .permitAll()
-                    .antMatchers("/personalSettings*",
-                            "/playerSettings*", "/shareSettings*", "/credentialsSettings*")
-                    .hasRole("SETTINGS")
-                    .antMatchers("/generalSettings*", "/advancedSettings*", "/userSettings*",
-                            "/musicFolderSettings*", "/databaseSettings*", "/transcodeSettings*", "/rest/startScan*")
-                    .hasRole("ADMIN")
-                    .antMatchers("/deletePlaylist*", "/savePlaylist*")
-                    .hasRole("PLAYLIST")
-                    .antMatchers("/download*")
-                    .hasRole("DOWNLOAD")
-                    .antMatchers("/upload*")
-                    .hasRole("UPLOAD")
-                    .antMatchers("/createShare*")
-                    .hasRole("SHARE")
-                    .antMatchers("/changeCoverArt*", "/editTags*")
-                    .hasRole("COVERART")
-                    .antMatchers("/setMusicFileInfo*")
-                    .hasRole("COMMENT")
-                    .antMatchers("/podcastReceiverAdmin*")
-                    .hasRole("PODCAST")
-                    .antMatchers("/**")
-                    .hasRole("USER")
-                    .anyRequest().authenticated()
-                    .and().formLogin()
-                    .loginPage("/login")
-                    .permitAll()
-                    .defaultSuccessUrl("/index", true)
-                    .failureUrl(FAILURE_URL)
-                    .usernameParameter("j_username")
-                    .passwordParameter("j_password")
-                    .and()
-                    .logout(logout -> logout
-                            .deleteCookies("JSESSIONID", "XSRF-TOKEN")
-                            .clearAuthentication(true)
-                            .invalidateHttpSession(true)
-                            .logoutSuccessUrl("/login?logout"))
-                    .rememberMe().key(rememberMeKey).userDetailsService(securityService);
+        String rememberMeKey = settingsService.getRememberMeKey();
+        if (rememberMeKey != null) {
+            LOG.info("Using a fixed 'remember me' key from properties, this is insecure.");
         }
+
+        http
+                .cors(Customizer.withDefaults())
+                .httpBasic(Customizer.withDefaults())
+                .addFilterAfter(restAuthenticationFilter, BasicAuthenticationFilter.class)
+                .csrf(csrf -> csrf.ignoringRequestMatchers(antMatcher("/ws/Sonos/**")).requireCsrfProtectionMatcher(csrfSecurityRequestMatcher))
+                .headers(headers -> headers.frameOptions(frameOptionsConfig -> frameOptionsConfig.sameOrigin()))
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(
+                                "/recover*", "/accessDenied*", "/style/**", "/icons/**", "/flash/**", "/script/**",
+                                "/login", "/WEB-INF/jsp/login**", "/error", "/sonos/**", "/sonoslink/**", "/ws/Sonos/**"
+                        )
+                        .permitAll()
+                        .requestMatchers("/personalSettings*",
+                                "/playerSettings*", "/shareSettings*", "/credentialsSettings*"
+                        )
+                        .hasRole("SETTINGS")
+                        .requestMatchers("/generalSettings*", "/advancedSettings*", "/userSettings*",
+                                "/musicFolderSettings*", "/databaseSettings*", "/transcodeSettings*", "/rest/startScan*")
+                        .hasRole("ADMIN")
+                        .requestMatchers("/deletePlaylist*", "/savePlaylist*")
+                        .hasRole("PLAYLIST")
+                        .requestMatchers("/download*")
+                        .hasRole("DOWNLOAD")
+                        .requestMatchers("/upload*")
+                        .hasRole("UPLOAD")
+                        .requestMatchers("/createShare*")
+                        .hasRole("SHARE")
+                        .requestMatchers("/changeCoverArt*", "/editTags*")
+                        .hasRole("COVERART")
+                        .requestMatchers("/setMusicFileInfo*")
+                        .hasRole("COMMENT")
+                        .requestMatchers("/podcastReceiverAdmin*")
+                        .hasRole("PODCAST")
+                        .requestMatchers("/**")
+                        .hasRole("USER")
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .permitAll()
+                        .defaultSuccessUrl("/index", true)
+                        .failureUrl(FAILURE_URL)
+                        .usernameParameter("j_username")
+                        .passwordParameter("j_password")
+                )
+                .logout(logout -> logout
+                        .deleteCookies("JSESSIONID", "XSRF-TOKEN")
+                        .clearAuthentication(true)
+                        .invalidateHttpSession(true)
+                        .logoutSuccessUrl("/login?logout"))
+                .rememberMe(rememberMe -> rememberMe.key(rememberMeKey).userDetailsService(securityService));
+
+        return http.build();
     }
 
     @Bean

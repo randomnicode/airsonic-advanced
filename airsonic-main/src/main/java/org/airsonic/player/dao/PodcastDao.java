@@ -19,6 +19,7 @@
  */
 package org.airsonic.player.dao;
 
+import jakarta.annotation.PostConstruct;
 import org.airsonic.player.domain.PodcastChannel;
 import org.airsonic.player.domain.PodcastChannelRule;
 import org.airsonic.player.domain.PodcastEpisode;
@@ -27,8 +28,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.PostConstruct;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

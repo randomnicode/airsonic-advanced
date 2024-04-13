@@ -20,6 +20,7 @@
 package org.airsonic.player.controller;
 
 import com.google.common.io.ByteStreams;
+import jakarta.servlet.http.HttpServletRequest;
 import org.airsonic.player.dao.PlayerDaoPlayQueueFactory;
 import org.airsonic.player.domain.*;
 import org.airsonic.player.io.PipeStreams.MonitoredInputStream;
@@ -51,8 +52,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.ServletWebRequest;
-
-import javax.servlet.http.HttpServletRequest;
 
 import java.awt.*;
 import java.io.FilterInputStream;

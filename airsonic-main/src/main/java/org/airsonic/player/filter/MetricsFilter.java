@@ -1,10 +1,9 @@
 package org.airsonic.player.filter;
 
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.airsonic.player.monitor.MetricsManager;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 

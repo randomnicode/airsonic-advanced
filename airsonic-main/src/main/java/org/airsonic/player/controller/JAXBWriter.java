@@ -20,6 +20,10 @@
 package org.airsonic.player.controller;
 
 import com.google.common.net.MediaType;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import org.airsonic.player.controller.SubsonicRESTController.APIException;
 import org.airsonic.player.util.StringUtil;
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,10 +38,6 @@ import org.subsonic.restapi.ObjectFactory;
 import org.subsonic.restapi.Response;
 import org.subsonic.restapi.ResponseStatus;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -59,7 +59,7 @@ public class JAXBWriter {
 
     private static final Logger LOG = LoggerFactory.getLogger(JAXBWriter.class);
 
-    private final javax.xml.bind.JAXBContext jaxbContext;
+    private final jakarta.xml.bind.JAXBContext jaxbContext;
     private final DatatypeFactory datatypeFactory;
     private static final String restProtocolVersion = parseRESTProtocolVersion();
 

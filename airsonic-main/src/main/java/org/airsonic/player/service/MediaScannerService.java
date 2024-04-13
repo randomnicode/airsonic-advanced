@@ -19,6 +19,7 @@
  */
 package org.airsonic.player.service;
 
+import jakarta.annotation.PostConstruct;
 import org.airsonic.player.dao.AlbumDao;
 import org.airsonic.player.dao.ArtistDao;
 import org.airsonic.player.dao.MediaFileDao;
@@ -33,8 +34,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.subsonic.restapi.ScanStatus;
-
-import javax.annotation.PostConstruct;
 
 import java.io.IOException;
 import java.nio.file.Paths;

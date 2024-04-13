@@ -19,6 +19,7 @@
  */
 package org.airsonic.player.dao;
 
+import jakarta.annotation.PostConstruct;
 import org.airsonic.player.domain.MediaFile;
 import org.airsonic.player.domain.MusicFolder;
 import org.slf4j.Logger;
@@ -27,8 +28,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.PostConstruct;
 
 import java.io.File;
 import java.nio.file.Path;

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.airsonic.player</groupId>
     <artifactId>airsonic</artifactId>
-    <version>11.0.0-SNAPSHOT</version>
+    <version>12.0.0-SNAPSHOT</version>
     <name>Airsonic</name>
     <packaging>pom</packaging>
     <organization>
@@ -17,15 +17,15 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.12</version>
+        <version>3.2.4</version>
         <relativePath />
     </parent>
 
     <properties>
         <failOnDependencyWarning>true</failOnDependencyWarning>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>11</java.version>
-        <cxf.version>3.4.3</cxf.version>
+        <java.version>21</java.version>
+        <cxf.version>4.0.3</cxf.version>
         <docker.container.repo>airsonicadvanced/airsonic-advanced</docker.container.repo>
     </properties>
 
@@ -34,13 +34,6 @@
             <id>local1</id>
             <name>Local Repository</name>
             <url>file://${project.basedir}/../repo</url>
-        </repository>
-        <repository>
-            <id>4thline-repo</id>
-            <url>http://4thline.org/m2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
         </repository>
     </repositories>
 
@@ -75,6 +68,7 @@
             </dependency>
 
             <!-- Fix convergence issues -->
+            <!--
             <dependency>
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm</artifactId>
@@ -105,11 +99,22 @@
                 <groupId>jakarta.jws</groupId>
                 <artifactId>jakarta.jws-api</artifactId>
                 <version>1.1.1</version>
-            </dependency>
+            </dependency>-->
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
                 <version>1.15.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>4.0.2</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.ws</groupId>
+                <artifactId>jakarta.xml.ws-api</artifactId>
+                <version>4.0.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -120,7 +125,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>buildnumber-maven-plugin</artifactId>
-                    <version>1.4</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.cxf</groupId>
@@ -128,14 +133,17 @@
                     <version>${cxf.version}</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.jvnet.jaxb2.maven2</groupId>
-                    <artifactId>maven-jaxb2-plugin</artifactId>
-                    <version>0.14.0</version>
+                    <groupId>org.jvnet.jaxb</groupId>
+                    <artifactId>jaxb-maven-plugin</artifactId>
+                    <version>4.0.3</version>
+<!--                    <groupId>org.jvnet.jaxb2.maven2</groupId>-->
+<!--                    <artifactId>maven-jaxb2-plugin</artifactId>-->
+<!--                    <version>0.15.3</version>-->
                 </plugin>
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.34.1</version>
+                    <version>0.44.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-war-plugin</artifactId>
@@ -151,7 +159,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.3.1</version>
                     <executions>
                         <execution>
                             <id>validate</id>
@@ -172,14 +180,14 @@
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
                             <artifactId>checkstyle</artifactId>
-                            <version>8.31</version>
+                            <version>10.15.0</version>
                         </dependency>
                     </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-pmd-plugin</artifactId>
-                    <version>3.13.0</version>
+                    <version>3.21.2</version>
                     <executions>
                         <execution>
                             <id>validate</id>
@@ -196,7 +204,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>5.3.2</version>
+                    <version>9.1.0</version>
                     <inherited>true</inherited>
                     <configuration>
                         <cveValidForHours>24</cveValidForHours>
@@ -230,7 +238,7 @@
                 <plugin>
                     <groupId>net.nicoulaj.maven.plugins</groupId>
                     <artifactId>checksum-maven-plugin</artifactId>
-                    <version>1.8</version>
+                    <version>1.11</version>
                     <executions>
                         <execution>
                             <phase>package</phase>

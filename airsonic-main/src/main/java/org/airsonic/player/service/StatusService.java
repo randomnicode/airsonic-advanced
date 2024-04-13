@@ -19,6 +19,7 @@
  */
 package org.airsonic.player.service;
 
+import jakarta.annotation.PostConstruct;
 import org.airsonic.player.ajax.NowPlayingInfo;
 import org.airsonic.player.domain.MediaFile;
 import org.airsonic.player.domain.PlayStatus;
@@ -27,8 +28,6 @@ import org.airsonic.player.domain.TransferStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 
 import java.time.Duration;
 import java.time.Instant;

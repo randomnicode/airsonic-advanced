@@ -21,14 +21,6 @@ package org.airsonic.player.ajax;
 
 import org.airsonic.player.util.StringUtil;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
@@ -38,10 +30,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.client.RestClient;
 
-import java.io.IOException;
 import java.io.StringReader;
-import java.net.SocketException;
 
 import static org.airsonic.player.util.XMLUtil.createSAXBuilder;
 
@@ -79,16 +70,17 @@ public class LyricsWSController {
             String xml = executeGetRequest(url);
             lyrics = parseSearchResult(xml);
 
-        } catch (HttpResponseException x) {
-            LOG.warn("Failed to get lyrics for song '{}'. Request failed: {}", song, x.toString());
-            if (x.getStatusCode() == 503) {
-                lyrics.setTryLater(true);
-            }
-        } catch (SocketException | ConnectTimeoutException x) {
-            LOG.warn("Failed to get lyrics for song '{}': {}", song, x.toString());
-            lyrics.setTryLater(true);
+//        }
+//        catch (RestClientException x) {
+//            LOG.warn("Failed to get lyrics for song '{}'. Request failed: {}", song, x.toString());
+//            if (x.getStatusCode() == 503) {
+//                lyrics.setTryLater(true);
+//            }
+//        } catch (SocketException | ConnectTimeoutException x) {
+//            LOG.warn("Failed to get lyrics for song '{}': {}", song, x.toString());
+//            lyrics.setTryLater(true);
         } catch (Exception x) {
-            LOG.warn("Failed to get lyrics for song '" + song + "'.", x);
+            LOG.warn("Failed to get lyrics for song '{}'.", song, x);
         }
         return lyrics;
     }
@@ -107,17 +99,10 @@ public class LyricsWSController {
         return new LyricsInfo(lyric, artist, song);
     }
 
-    private String executeGetRequest(String url) throws IOException {
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(15000)
-                .setSocketTimeout(15000)
-                .build();
-        HttpGet method = new HttpGet(url);
-        method.setConfig(requestConfig);
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            ResponseHandler<String> responseHandler = new BasicResponseHandler();
-            return client.execute(method, responseHandler);
-        }
+    RestClient restClient = RestClient.create();
+
+    private String executeGetRequest(String url) {
+        return restClient.get().uri(url).retrieve().body(String.class);
     }
 
     public static class LyricsGetRequest {

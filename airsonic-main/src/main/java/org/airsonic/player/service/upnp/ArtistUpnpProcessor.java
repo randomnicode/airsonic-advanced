@@ -24,9 +24,9 @@ import org.airsonic.player.domain.Album;
 import org.airsonic.player.domain.Artist;
 import org.airsonic.player.domain.MusicFolder;
 import org.airsonic.player.service.SearchService;
-import org.fourthline.cling.support.model.DIDLContent;
-import org.fourthline.cling.support.model.container.Container;
-import org.fourthline.cling.support.model.container.MusicArtist;
+import org.jupnp.support.model.DIDLContent;
+import org.jupnp.support.model.container.Container;
+import org.jupnp.support.model.container.MusicArtist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

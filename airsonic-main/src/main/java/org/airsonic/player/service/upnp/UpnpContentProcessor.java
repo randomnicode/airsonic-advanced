@@ -23,12 +23,12 @@ import com.google.common.primitives.Ints;
 import org.airsonic.player.domain.MusicFolder;
 import org.airsonic.player.domain.ParamSearchResult;
 import org.airsonic.player.util.Util;
-import org.fourthline.cling.support.contentdirectory.DIDLParser;
-import org.fourthline.cling.support.model.BrowseResult;
-import org.fourthline.cling.support.model.DIDLContent;
-import org.fourthline.cling.support.model.SortCriterion;
-import org.fourthline.cling.support.model.container.Container;
-import org.fourthline.cling.support.model.container.StorageFolder;
+import org.jupnp.support.contentdirectory.DIDLParser;
+import org.jupnp.support.model.BrowseResult;
+import org.jupnp.support.model.DIDLContent;
+import org.jupnp.support.model.SortCriterion;
+import org.jupnp.support.model.container.Container;
+import org.jupnp.support.model.container.StorageFolder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.ParameterizedType;
