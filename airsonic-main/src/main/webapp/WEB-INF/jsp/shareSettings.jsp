@@ -43,7 +43,7 @@
                 <td style="padding-left:1em"><input type="text" name="description[${share.id}]" size="40" value="${share.description}"/></td>
                 <td style="padding-left:1em"><javatime:format value="${share.lastVisited}" style="M-"/></td>
                 <td style="padding-left:1em; text-align:right">${share.visitCount}</td>
-                <td style="padding-left:1em"><a href="${albumUrl}" title="${shareInfo.dir.name}"><str:truncateNicely upper="30">${fn:escapeXml(shareInfo.dir.name)}</str:truncateNicely></a></td>
+                <td style="padding-left:1em"><a href="${albumUrl}" title="${shareInfo.dir.name}">${fn:escapeXml(shareInfo.dir.name)}</a></td>
                 <td style="padding-left:1em"><javatime:format value="${share.expires}" style="M-"/></td>
                 <td style="padding-left:1em">
                     <label><input type="radio" name="expireIn[${share.id}]" value="7"><fmt:message key="sharesettings.expirein.week"/></label>

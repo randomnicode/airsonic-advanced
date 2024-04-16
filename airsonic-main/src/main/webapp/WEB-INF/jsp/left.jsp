@@ -204,7 +204,7 @@
                         <sub:param name="id" value="${mediaFile.id}"/>
                     </c:forEach>
                 </sub:url>
-                <a target="main" href="${mainUrl}"><str:truncateNicely upper="${35}">${fn:escapeXml(artist.name)}</str:truncateNicely></a>
+                <a target="main" href="${mainUrl}">${fn:escapeXml(artist.name)}</a>
             </span>
         </p>
     </c:forEach>
@@ -222,7 +222,7 @@
                 <c:param name="downloadEnabled" value="${model.user.downloadRole and not model.partyMode}"/>
                 <c:param name="video" value="${song.video and model.player.web}"/>
             </c:import>
-            <str:truncateNicely upper="${35}">${fn:escapeXml(song.title)}</str:truncateNicely>
+            ${fn:escapeXml(song.title)}
         </span>
     </p>
 </c:forEach>

@@ -28,10 +28,10 @@ PARAMETERS
 
 <c:set var="captionCount" value="${empty param.captionCount ? 0 : param.captionCount}"/>
 
-<str:randomString count="5" type="alphabet" var="divId"/>
-<str:randomString count="5" type="alphabet" var="imgId"/>
-<str:randomString count="5" type="alphabet" var="playId"/>
-<str:randomString count="5" type="alphabet" var="addId"/>
+<spring:eval expression="T(org.apache.commons.lang3.RandomStringUtils).randomAlphabetic(5)" var="divId" />
+<spring:eval expression="T(org.apache.commons.lang3.RandomStringUtils).randomAlphabetic(5)" var="imgId" />
+<spring:eval expression="T(org.apache.commons.lang3.RandomStringUtils).randomAlphabetic(5)" var="playId" />
+<spring:eval expression="T(org.apache.commons.lang3.RandomStringUtils).randomAlphabetic(5)" var="addId" />
 
 <div class="coverart dropshadow">
     <div style="width:${size};max-width:${size};height:${size};max-height:${size};cursor:pointer;<c:if test='${param.hideOverflow}'>overflow:hidden</c:if>;" title="${param.caption1}" id="${divId}">
