@@ -737,27 +737,27 @@
                     </dependency>
                 </dependencies>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.eclipse.jetty</groupId>-->
-<!--                <artifactId>jetty-jspc-maven-plugin</artifactId>-->
-<!--                <version>11.0.20</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>jspc</id>-->
-<!--                        <goals>-->
-<!--                            <goal>jspc</goal>-->
-<!--                        </goals>-->
-<!--                        <phase>compile</phase>-->
-<!--                        <configuration>-->
-<!--                            &lt;!&ndash; Since we are using spring boot - we do not have a web.xml so there is no sense-->
-<!--                            enabling merging. Furthermore, we output the webXmlFragment to the target/classes-->
-<!--                            directory such that it will be on the classpath for use during runtime &ndash;&gt;-->
-<!--                            <mergeFragment>false</mergeFragment>-->
-<!--                            <webXmlFragment>${project.build.outputDirectory}/precompiled-jsp-web.xml</webXmlFragment>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-jspc-maven-plugin</artifactId>
+                <version>11.0.20</version>
+                <executions>
+                    <execution>
+                        <id>jspc</id>
+                        <goals>
+                            <goal>jspc</goal>
+                        </goals>
+                        <phase>compile</phase>
+                        <configuration>
+                            <!-- Since we are using spring boot - we do not have a web.xml so there is no sense
+                            enabling merging. Furthermore, we output the webXmlFragment to the target/classes
+                            directory such that it will be on the classpath for use during runtime -->
+                            <mergeFragment>false</mergeFragment>
+                            <webXmlFragment>${project.build.outputDirectory}/precompiled-jsp-web.xml</webXmlFragment>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <reporting>
