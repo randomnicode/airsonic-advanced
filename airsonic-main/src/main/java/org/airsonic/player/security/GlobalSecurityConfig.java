@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.io.BaseEncoding;
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletContext;
 import org.airsonic.player.service.JWTSecurityService;
 import org.airsonic.player.service.SecurityService;
@@ -256,6 +257,8 @@ public class GlobalSecurityConfig {
                 .csrf(csrf -> csrf.ignoringRequestMatchers(antMatcher("/ws/Sonos/**")).requireCsrfProtectionMatcher(csrfSecurityRequestMatcher))
                 .headers(headers -> headers.frameOptions(frameOptionsConfig -> frameOptionsConfig.sameOrigin()))
                 .authorizeHttpRequests(authz -> authz
+                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR)
+                        .permitAll()
                         .requestMatchers(
                                 "/recover*", "/accessDenied*", "/style/**", "/icons/**", "/flash/**", "/script/**",
                                 "/login", "/WEB-INF/jsp/login**", "/error", "/sonos/**", "/sonoslink/**", "/ws/Sonos/**"
