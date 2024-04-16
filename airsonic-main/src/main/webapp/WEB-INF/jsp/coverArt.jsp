@@ -37,22 +37,22 @@ PARAMETERS
     <div style="width:${size};max-width:${size};height:${size};max-height:${size};cursor:pointer;<c:if test='${param.hideOverflow}'>overflow:hidden</c:if>;" title="${param.caption1}" id="${divId}">
 
         <c:if test="${not empty param.albumId}">
-            <c:url value="main.view" var="targetUrl">
+            <c:url value="main" var="targetUrl">
                 <c:param name="id" value="${param.albumId}"/>
             </c:url>
         </c:if>
         <c:if test="${not empty param.playlistId}">
-            <c:url value="playlist.view" var="targetUrl">
+            <c:url value="playlist" var="targetUrl">
                 <c:param name="id" value="${param.playlistId}"/>
             </c:url>
         </c:if>
         <c:if test="${not empty param.podcastChannelId}">
-            <c:url value="podcastChannel.view" var="targetUrl">
+            <c:url value="podcastChannel" var="targetUrl">
                 <c:param name="id" value="${param.podcastChannelId}"/>
             </c:url>
         </c:if>
 
-        <c:url value="/coverArt.view" var="coverArtUrl">
+        <c:url value="/coverArt" var="coverArtUrl">
             <c:if test="${not empty param.coverArtSize}">
                 <c:param name="size" value="${param.coverArtSize}"/>
             </c:if>
@@ -67,7 +67,7 @@ PARAMETERS
             </c:if>
         </c:url>
 
-        <c:url value="/coverArt.view" var="zoomCoverArtUrl">
+        <c:url value="/coverArt" var="zoomCoverArtUrl">
             <c:param name="id" value="${param.albumId}"/>
         </c:url>
 
@@ -106,7 +106,7 @@ PARAMETERS
 <c:if test="${param.showChange or param.showZoom}">
     <div style="padding-top:6px;text-align:right">
         <c:if test="${param.showChange}">
-            <c:url value="/changeCoverArt.view" var="changeCoverArtUrl">
+            <c:url value="/changeCoverArt" var="changeCoverArtUrl">
                 <c:param name="id" value="${param.albumId}"/>
             </c:url>
             <a class="detail" href="${changeCoverArtUrl}"><fmt:message key="coverart.change"/></a>

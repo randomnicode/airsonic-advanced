@@ -12,7 +12,7 @@
             $("#newMusicFolderPath").attr("placeholder", "<fmt:message key="musicfoldersettings.path"/>");
 
             <c:if test="${settings_reload}">
-            parent.frames.left.location.href="left.view?";
+            parent.frames.left.location.href="left?";
             </c:if>
 
             updateClearFullScan();
@@ -45,7 +45,7 @@
     <c:param name="toast" value="${settings_toast}"/>
 </c:import>
 
-<form:form modelAttribute="command" action="musicFolderSettings.view" method="post">
+<form:form modelAttribute="command" action="musicFolderSettings" method="post">
 
 <table class="indent">
     <tr>
@@ -126,7 +126,7 @@
 
 </table>
 
-    <p class="forward"><a href="userSettings.view"><fmt:message key="musicfoldersettings.access"/></a></p>
+    <p class="forward"><a href="userSettings"><fmt:message key="musicfoldersettings.access"/></a></p>
     <p class="detail" style="width:60%;white-space:normal;margin-top:-10px;">
         <fmt:message key="musicfoldersettings.access.description"/>
     </p>
@@ -184,7 +184,7 @@
 
     <table>
         <tr>
-            <td><div class="forward"><a href="musicFolderSettings.view?scanNow"><fmt:message key="musicfoldersettings.scannow"/></a></div></td>
+            <td><div class="forward"><a href="musicFolderSettings?scanNow"><fmt:message key="musicfoldersettings.scannow"/></a></div></td>
             <td><c:import url="helpToolTip.jsp"><c:param name="topic" value="scanMediaFolders"/></c:import></td>
         </tr>
     </table>
@@ -202,7 +202,7 @@
         <fmt:message key="musicfoldersettings.fastcache.description"/>
     </p>
 
-    <p class="forward"><a href="musicFolderSettings.view?expunge"><fmt:message key="musicfoldersettings.expunge"/></a></p>
+    <p class="forward"><a href="musicFolderSettings?expunge"><fmt:message key="musicfoldersettings.expunge"/></a></p>
     <p class="detail" style="width:60%;white-space:normal;margin-top:-10px;">
         <fmt:message key="musicfoldersettings.expunge.description"/>
     </p>
@@ -218,7 +218,7 @@
 
     <p >
         <input type="submit" value="<fmt:message key='common.save'/>" style="margin-right:0.3em">
-        <a href='nowPlaying.view'><input type="button" value="<fmt:message key='common.cancel'/>"></a>
+        <a href='nowPlaying'><input type="button" value="<fmt:message key='common.cancel'/>"></a>
     </p>
 
 </form:form>

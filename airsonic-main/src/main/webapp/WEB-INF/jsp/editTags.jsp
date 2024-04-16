@@ -123,7 +123,7 @@
 </head>
 <body class="mainframe bgcolor1" onload="init()">
 <h1><fmt:message key="edittags.title"/></h1>
-<sub:url value="main.view" var="backUrl"><sub:param name="id" value="${model.id}"/></sub:url>
+<sub:url value="main" var="backUrl"><sub:param name="id" value="${model.id}"/></sub:url>
 <div class="back"><a href="${backUrl}"><fmt:message key="common.back"/></a></div>
 
 <table class="ruleTable indent">

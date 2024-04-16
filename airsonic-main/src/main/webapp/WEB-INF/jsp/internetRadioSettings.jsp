@@ -12,7 +12,7 @@
     <c:param name="toast" value="${settings_toast}"/>
 </c:import>
 
-<form method="post" action="internetRadioSettings.view">
+<form method="post" action="internetRadioSettings">
 <sec:csrfInput />
 <table class="indent">
     <tr>
@@ -50,7 +50,7 @@
     <tr>
         <td style="padding-top:1.5em" colspan="5">
             <input type="submit" value="<fmt:message key='common.save'/>" style="margin-right:0.3em">
-            <a href='nowPlaying.view'><input type="button" value="<fmt:message key='common.cancel'/>"></a>
+            <a href='nowPlaying'><input type="button" value="<fmt:message key='common.cancel'/>"></a>
         </td>
     </tr>
 </table>
@@ -62,7 +62,7 @@
 </c:if>
 
 <c:if test="${settings_reload}">
-    <script language="javascript" type="text/javascript">parent.frames.left.location.href="left.view?"</script>
+    <script language="javascript" type="text/javascript">parent.frames.left.location.href="left?"</script>
 </c:if>
 
 </body></html>

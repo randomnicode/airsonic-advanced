@@ -158,7 +158,7 @@ public class UserSettingsController {
             redirectAttributes.addFlashAttribute("userIndex", getUserIndex(command));
         }
 
-        return "redirect:userSettings.view";
+        return "redirect:userSettings";
     }
 
     private Integer getUserIndex(UserSettingsCommand command) {

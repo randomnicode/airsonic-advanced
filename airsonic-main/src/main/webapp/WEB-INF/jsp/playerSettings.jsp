@@ -53,10 +53,10 @@ $(document).ready(function() {
     </c:when>
     <c:otherwise>
 
-        <c:url value="playerSettings.view" var="deleteUrl">
+        <c:url value="playerSettings" var="deleteUrl">
             <c:param name="delete" value="${command.playerId}"/>
         </c:url>
-        <c:url value="playerSettings.view" var="cloneUrl">
+        <c:url value="playerSettings" var="cloneUrl">
             <c:param name="clone" value="${command.playerId}"/>
         </c:url>
 
@@ -64,7 +64,7 @@ $(document).ready(function() {
             <tr>
                 <td><b><fmt:message key="playersettings.title"/></b></td>
                 <td>
-                    <select name="player" onchange="location='playerSettings.view?id=' + options[selectedIndex].value;">
+                    <select name="player" onchange="location='playerSettings?id=' + options[selectedIndex].value;">
                         <c:forEach items="${command.players}" var="player">
                             <option ${player.id eq command.playerId ? "selected" : ""}
                                     value="${player.id}">${fn:escapeXml(player.description)}</option>
@@ -78,7 +78,7 @@ $(document).ready(function() {
             </tr>
         </table>
 
-        <form:form modelAttribute="command" method="post" action="playerSettings.view">
+        <form:form modelAttribute="command" method="post" action="playerSettings">
             <form:hidden path="playerId"/>
 
             <table class="ruleTable indent">
@@ -184,7 +184,7 @@ $(document).ready(function() {
             </c:if>
 
             <input type="submit" value="<fmt:message key='common.save'/>" style="margin-top:1em;margin-right:0.3em">
-            <a href='nowPlaying.view'><input type="button" value="<fmt:message key='common.cancel'/>" style="margin-top:1em"></a>
+            <a href='nowPlaying'><input type="button" value="<fmt:message key='common.cancel'/>" style="margin-top:1em"></a>
         </form:form>
     </c:otherwise>
 </c:choose>

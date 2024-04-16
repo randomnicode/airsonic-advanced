@@ -27,7 +27,7 @@
 
             var mainLocation = top.main.location.href;
             if (${model.musicFolderChanged}) {
-                if (mainLocation.indexOf("/home.view") != -1) {
+                if (mainLocation.indexOf("/home") != -1) {
                     top.main.location.href = mainLocation;
                 }
             }
@@ -54,7 +54,7 @@
             for (var i = 0; i < playlists.length; i++) {
                 var playlist = playlists[i];
                 var playlistName = escapeHtml(playlist.name) + "&nbsp;(" + playlist.fileCount + ")";
-                var node = $("<p class='dense truncate playlist' id='playlistid-" + playlist.id + "' title='" + playlistName + "'><a target='main' href='playlist.view?id=" +
+                var node = $("<p class='dense truncate playlist' id='playlistid-" + playlist.id + "' title='" + playlistName + "'><a target='main' href='playlist?id=" +
                         playlist.id + "'>" + playlistName + "</a></p>");
                 var overflow = i > 9;
                 if (!overflow) {
@@ -75,7 +75,7 @@
         function updatedPlaylistCallback(playlist) {
             var oldNode = $("#playlistid-" + playlist.id);
             var playlistName = escapeHtml(playlist.name) + "&nbsp;(" + playlist.fileCount + ")";
-            var node = $("<p class='dense truncate playlist' id='playlistid-" + playlist.id + "' title='" + playlistName + "'><a target='main' href='playlist.view?id=" +
+            var node = $("<p class='dense truncate playlist' id='playlistid-" + playlist.id + "' title='" + playlistName + "'><a target='main' href='playlist?id=" +
                         playlist.id + "'>" + playlistName + "</a></p>");
             if (oldNode.length == 0) {
                 var overflow = $(".playlist").length > 10;
@@ -106,14 +106,14 @@
 <a name="top"></a>
 
 <div style="padding-bottom:1.5em">
-    <a href="home.view" target="main">
+    <a href="home" target="main">
       <img src="<spring:theme code='logoImage'/>" style="width:196px" title="<fmt:message key='top.help'/>" alt="">
     </a>
 </div>
 
 <c:if test="${fn:length(model.musicFolders) > 1}">
     <div style="padding-bottom:1.0em">
-    <select name="musicFolderId" style="width:100%" onchange="location='left.view?musicFolderId=' + options[selectedIndex].value;">
+    <select name="musicFolderId" style="width:100%" onchange="location='left?musicFolderId=' + options[selectedIndex].value;">
             <option value="-1"><fmt:message key="left.allfolders"/></option>
             <c:forEach items="${model.musicFolders}" var="musicFolder">
                 <option ${model.selectedMusicFolder.id == musicFolder.id ? "selected" : ""} value="${musicFolder.id}">${fn:escapeXml(musicFolder.name)}</option>
@@ -132,10 +132,10 @@
     <div class="forward">
         <c:choose>
             <c:when test="${model.scanning}">
-                <a href="left.view"><fmt:message key="common.refresh"/></a>
+                <a href="left"><fmt:message key="common.refresh"/></a>
             </c:when>
             <c:otherwise>
-                <a href="left.view?refresh=true"><fmt:message key="common.refresh"/></a>
+                <a href="left?refresh=true"><fmt:message key="common.refresh"/></a>
             </c:otherwise>
         </c:choose>
     </div>
@@ -145,7 +145,7 @@
     <h2 class="bgcolor1" style="padding-left: 2px"><fmt:message key="left.shortcut"/></h2>
     <c:forEach items="${model.shortcuts}" var="shortcut">
         <p class="dense truncate" style="padding-left:2px">
-            <sub:url value="main.view" var="mainUrl">
+            <sub:url value="main" var="mainUrl">
                 <sub:param name="id" value="${shortcut.id}"/>
             </sub:url>
             <a target="main" href="${mainUrl}">${fn:escapeXml(shortcut.name)}</a>
@@ -160,7 +160,7 @@
     <div style="padding-top: 0.3em"></div>
     <div class="forward" id="showAllPlaylists" style="display: none"><a href="#" onclick="showAllPlaylists()"><fmt:message key="left.showallplaylists"/></a></div>
     <div class="forward"><a href="#" onclick="createEmptyPlaylist()"><fmt:message key="left.createplaylist"/></a></div>
-    <div class="forward"><a href="importPlaylist.view" target="main"><fmt:message key="left.importplaylist"/></a></div>
+    <div class="forward"><a href="importPlaylist" target="main"><fmt:message key="left.importplaylist"/></a></div>
 </div>
 
 <c:if test="${not empty model.radios}">
@@ -199,7 +199,7 @@
     <c:forEach items="${entry.value}" var="artist">
         <p class="dense truncate" style="padding-left:2px">
             <span title="${artist.name}">
-                <sub:url value="main.view" var="mainUrl">
+                <sub:url value="main" var="mainUrl">
                     <c:forEach items="${artist.mediaFiles}" var="mediaFile">
                         <sub:param name="id" value="${mediaFile.id}"/>
                     </c:forEach>

@@ -526,7 +526,7 @@ public class PlayQueueService {
         Function<MediaFile, String> remoteStreamUrlGenerator = file -> basePath + jwtSecurityService
                 .addJWTToken(player.getUsername(), "ext/stream?player=" + player.getId() + "&id=" + file.getId());
         Function<MediaFile, String> remoteCoverArtUrlGenerator = file -> basePath
-                + jwtSecurityService.addJWTToken(player.getUsername(), "ext/coverArt.view?id=" + file.getId());
+                + jwtSecurityService.addJWTToken(player.getUsername(), "ext/coverArt?id=" + file.getId());
         return mediaFileService.toMediaFileEntryList(player.getPlayQueue().getFiles(), player.getUsername(), true, true,
                 streamUrlGenerator, remoteStreamUrlGenerator, remoteCoverArtUrlGenerator);
     }

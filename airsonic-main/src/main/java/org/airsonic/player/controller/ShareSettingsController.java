@@ -78,7 +78,7 @@ public class ShareSettingsController {
 
         redirectAttributes.addFlashAttribute("settings_toast", true);
 
-        return "redirect:shareSettings.view";
+        return "redirect:shareSettings";
     }
 
     private void handleParameters(HttpServletRequest request) {

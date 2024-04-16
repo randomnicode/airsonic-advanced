@@ -67,8 +67,8 @@ public class NowPlayingController {
                 })
                 .map(mediaFileService::getParentOf)
                 .filter(dir -> !mediaFileService.isRoot(dir))
-                .map(dir -> "main.view?id=" + dir.getId())
-                .orElse("home.view");
+                .map(dir -> "main?id=" + dir.getId())
+                .orElse("home");
 
         return new ModelAndView(new RedirectView(url));
     }

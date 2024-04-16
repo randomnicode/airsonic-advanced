@@ -67,7 +67,7 @@ public class HomeController {
 
         User user = securityService.getCurrentUser(request);
         if (user.isAdminRole() && settingsService.isGettingStartedEnabled()) {
-            return new ModelAndView(new RedirectView("gettingStarted.view"));
+            return new ModelAndView(new RedirectView("gettingStarted"));
         }
         int listOffset = getIntParameter(request, "listOffset", 0);
         AlbumListType listType = AlbumListType.fromId(getStringParameter(request, "listType"));

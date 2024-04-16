@@ -18,7 +18,7 @@
     <c:param name="toast" value="${settings_toast}"/>
 </c:import>
 
-<form:form method="post" action="generalSettings.view" modelAttribute="command">
+<form:form method="post" action="generalSettings" modelAttribute="command">
 
     <table style="white-space:nowrap" class="indent">
 
@@ -204,7 +204,7 @@
         <tr>
             <td colspan="2" style="padding-top:1.5em">
                 <input type="submit" value="<fmt:message key='common.save'/>" style="margin-right:0.3em">
-                <a href='nowPlaying.view'><input type="button" value="<fmt:message key='common.cancel'/>"></a>
+                <a href='nowPlaying'><input type="button" value="<fmt:message key='common.cancel'/>"></a>
             </td>
         </tr>
 

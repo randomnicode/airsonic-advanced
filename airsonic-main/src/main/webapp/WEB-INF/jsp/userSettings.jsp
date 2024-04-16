@@ -10,7 +10,7 @@
         function init() {
             enablePasswordChangeFields();
             <c:if test="${settings_reload}">
-            parent.frames.left.location.href="left.view?";
+            parent.frames.left.location.href="left?";
             </c:if>
         }
         function enablePasswordChangeFields() {
@@ -49,7 +49,7 @@
     <tr>
         <td><b><fmt:message key="usersettings.title"/></b></td>
         <td>
-            <select name="username" onchange="location='userSettings.view?userIndex=' + (selectedIndex - 1);">
+            <select name="username" onchange="location='userSettings?userIndex=' + (selectedIndex - 1);">
                 <option value="">-- <fmt:message key="usersettings.newuser"/> --</option>
                 <c:forEach items="${command.users}" var="user">
                     <option ${user.username eq command.username ? "selected" : ""}
@@ -62,7 +62,7 @@
 
 <p/>
 
-<form:form method="post" action="userSettings.view" modelAttribute="command">
+<form:form method="post" action="userSettings" modelAttribute="command">
         <table>
             <tr style="${command.currentUser ? 'display:none' : ''}">
                 <td><form:checkbox path="adminRole" id="admin" cssClass="checkbox"/></td>
@@ -219,7 +219,7 @@
     </c:choose>
 
     <input type="submit" value="<fmt:message key='common.save'/>" style="margin-top:1.5em;margin-right:0.3em">
-    <a href='nowPlaying.view'><input type="button" value="<fmt:message key='common.cancel'/>" style="margin-top:1.5em"></a>
+    <a href='nowPlaying'><input type="button" value="<fmt:message key='common.cancel'/>" style="margin-top:1.5em"></a>
 </form:form>
 
 </body></html>

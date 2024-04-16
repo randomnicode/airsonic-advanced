@@ -14,13 +14,13 @@
         </c:if>
 
         <c:if test="${model.listType ne 'random'}">
-            <sub:url value="home.view" var="previousUrl">
+            <sub:url value="home" var="previousUrl">
                 <sub:param name="listType" value="${model.listType}"/>
                 <sub:param name="listOffset" value="${model.listOffset - model.listSize}"/>
                 <sub:param name="genre" value="${model.genre}"/>
                 <sub:param name="decade" value="${model.decade}"/>
             </sub:url>
-            <sub:url value="home.view" var="nextUrl">
+            <sub:url value="home" var="nextUrl">
                 <sub:param name="listType" value="${model.listType}"/>
                 <sub:param name="listOffset" value="${model.listOffset + model.listSize}"/>
                 <sub:param name="genre" value="${model.genre}"/>
@@ -51,7 +51,7 @@
                     <fmt:message key="home.decade.text"/>
                 </td>
                 <td style="padding-right: 2em">
-                    <select name="decade" onchange="location='home.view?listType=${model.listType}&amp;decade=' + options[selectedIndex].value">
+                    <select name="decade" onchange="location='home?listType=${model.listType}&amp;decade=' + options[selectedIndex].value">
                         <c:forEach items="${model.decades}" var="decade">
                             <option
                             ${decade eq model.decade ? "selected" : ""} value="${decade}">${decade}</option>
@@ -64,7 +64,7 @@
                     <fmt:message key="home.genre.text"/>
                 </td>
                 <td style="padding-right: 2em">
-                    <select name="genre" onchange="location='home.view?listType=${model.listType}&amp;genre=' + encodeURIComponent(options[selectedIndex].value)">
+                    <select name="genre" onchange="location='home?listType=${model.listType}&amp;genre=' + encodeURIComponent(options[selectedIndex].value)">
                         <c:forEach items="${model.genres}" var="genre">
                             <option ${genre.name eq model.genre ? "selected" : ""} value="${genre.name}">${genre.name} (${genre.albumCount})</option>
                         </c:forEach>

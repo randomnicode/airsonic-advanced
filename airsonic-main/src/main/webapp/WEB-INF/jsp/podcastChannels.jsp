@@ -80,7 +80,7 @@
                   title: "<fmt:message key='edittags.songtitle'/>",
                   render: function(data, type, row) {
                       if (type == "display" && data != null) {
-                          return $("<a>", {title: data, alt: data, text: data, target: "main"}).attr("href", "podcastChannel.view?id=" + row.id)[0].outerHTML;
+                          return $("<a>", {title: data, alt: data, text: data, target: "main"}).attr("href", "podcastChannel?id=" + row.id)[0].outerHTML;
                       }
                       return data;
                   }
@@ -227,7 +227,7 @@
                           if (channels.length == 1) {
                              name = channels[0].title;
                           }
-                          return $("<a>", {title: name, alt: name, text: name, target: "main"}).attr("href", "podcastChannel.view?id=" + data)[0].outerHTML;
+                          return $("<a>", {title: name, alt: name, text: name, target: "main"}).attr("href", "podcastChannel?id=" + data)[0].outerHTML;
                       }
                       return data;
                   }
@@ -453,7 +453,7 @@
         $('#directsubscribeok').on('click', evt => onCreateChannel($('#directsubscribe').val()));
         $('#refreshAllChannels').on('click', evt => onRefreshAllChannels());
         $('#exportOpml').on('click', evt => onExportOpml());
-        $('#podcastSettings').on('click', evt => top.main.location.href = "podcastSettings.view?");
+        $('#podcastSettings').on('click', evt => top.main.location.href = "podcastSettings?");
 
         viewSelectorRefresh();
         toggleViewDependentComponents();
@@ -580,7 +580,7 @@
       }
       function generateThumb(podcast, delay) {
         $('#nopodcasts').hide();
-        var urlBase = "<c:url value='/coverArtJsp.view'/>";
+        var urlBase = "<c:url value='/coverArtJsp'/>";
         //append container first to keep order intact when async callback happens
         $('#thumbs').append('<div class="albumThumb" id="podcastThumb-' + podcast.id + '"></div>');
         var delayString = delay ? ("&appearAfter=" + delay) : "";

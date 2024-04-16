@@ -48,7 +48,7 @@
 <h2>${fn:escapeXml(title)}</h2>
 
 <fmt:message key="common.default" var="defaultTitle"/>
-<form:form method="post" action="personalSettings.view" modelAttribute="command">
+<form:form method="post" action="personalSettings" modelAttribute="command">
 
     <table style="white-space:nowrap" class="indent">
 
@@ -354,14 +354,14 @@
 
     <p style="padding-top:1em;padding-bottom:1em">
         <input type="submit" value="<fmt:message key='common.save'/>" style="margin-right:0.3em"/>
-        <a href='nowPlaying.view'><input type="button" value="<fmt:message key='common.cancel'/>"></a>
+        <a href='nowPlaying'><input type="button" value="<fmt:message key='common.cancel'/>"></a>
     </p>
 
     <h2><fmt:message key="personalsettings.avatar.title"/></h2>
 
     <p style="padding-top:1em">
         <c:forEach items="${command.avatars}" var="avatar">
-            <c:url value="avatar.view" var="avatarUrl">
+            <c:url value="avatar" var="avatarUrl">
                 <c:param name="id" value="${avatar.id}"/>
             </c:url>
             <span style="white-space:nowrap;">
@@ -378,7 +378,7 @@
         <form:radiobutton id="customAvatar" path="avatarId" value="-2"/>
         <label for="customAvatar"><fmt:message key="personalsettings.avatar.custom"/>
             <c:if test="${not empty command.customAvatar}">
-                <sub:url value="avatar.view" var="avatarUrl">
+                <sub:url value="avatar" var="avatarUrl">
                     <sub:param name="username" value="${command.user.username}"/>
                     <sub:param name="forceCustom" value="true"/>
                 </sub:url>
@@ -388,7 +388,7 @@
     </p>
 </form:form>
 
-<form method="post" enctype="multipart/form-data" action="avatarUpload.view?${_csrf.parameterName}=${_csrf.token}">
+<form method="post" enctype="multipart/form-data" action="avatarUpload?${_csrf.parameterName}=${_csrf.token}">
     <table>
         <tr>
             <td style="padding-right:1em"><fmt:message key="personalsettings.avatar.changecustom"/></td>
@@ -404,7 +404,7 @@
 
 <c:if test="${settings_reload}">
     <script language="javascript" type="text/javascript">
-        parent.location.href="index.view?main=personalSettings.view";
+        parent.location.href="index?main=personalSettings";
     </script>
 </c:if>
 

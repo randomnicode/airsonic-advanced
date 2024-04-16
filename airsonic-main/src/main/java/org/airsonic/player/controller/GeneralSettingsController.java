@@ -142,7 +142,7 @@ public class GeneralSettingsController {
         settingsService.setLocale(locale);
         settingsService.save();
 
-        return "redirect:generalSettings.view";
+        return "redirect:generalSettings";
     }
 
 }

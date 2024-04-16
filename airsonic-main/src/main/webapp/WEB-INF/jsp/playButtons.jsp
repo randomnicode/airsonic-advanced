@@ -33,7 +33,7 @@ PARAMETERS
 <c:if test="${empty param.playEnabled or param.playEnabled}">
     <c:choose>
         <c:when test="${param.video}">
-            <sub:url value="/videoPlayer.view" var="videoUrl">
+            <sub:url value="/videoPlayer" var="videoUrl">
                 <sub:param name="id" value="${param.id}"/>
             </sub:url>
             <a href="${videoUrl}" target="main">
@@ -70,7 +70,7 @@ PARAMETERS
 
 <c:if test="${param.asTable}"><td class="fit"></c:if>
 <c:if test="${param.downloadEnabled}">
-    <sub:url value="/download.view" var="downloadUrl">
+    <sub:url value="/download" var="downloadUrl">
         <sub:param name="id" value="${param.id}"/>
     </sub:url>
     <a href="${downloadUrl}">

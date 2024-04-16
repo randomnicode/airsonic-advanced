@@ -14,7 +14,7 @@
     <c:param name="toast" value="${settings_toast}"/>
 </c:import>
 
-<form method="post" action="transcodingSettings.view">
+<form method="post" action="transcodingSettings">
 <sec:csrfInput />
 <table class="indent">
     <tr>
@@ -130,7 +130,7 @@
 
     <p style="padding-top:0.75em">
         <input type="submit" value="<fmt:message key='common.save'/>" style="margin-right:0.3em">
-        <a href='nowPlaying.view'><input type="button" value="<fmt:message key='common.cancel'/>" style="margin-right:1.3em"></a>
+        <a href='nowPlaying'><input type="button" value="<fmt:message key='common.cancel'/>" style="margin-right:1.3em"></a>
         <a href="https://airsonic.github.io/docs/transcode/" target="_blank" rel="noopener noreferrer"><fmt:message key="transcodingsettings.recommended"/></a>
     </p>
 

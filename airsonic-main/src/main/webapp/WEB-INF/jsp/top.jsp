@@ -139,50 +139,50 @@
             <img id="hide-left-frame" src="<spring:theme code='sidebarImage'/>" onclick="hideLeftFrame()" alt="" style="display:${model.showSideBar ? 'inline' : 'none'};cursor:pointer">
         </td>
         <td style="min-width:3em;padding-right:1em;text-align: center">
-            <a href="home.view?" target="main"><img src="<spring:theme code='homeImage'/>" title="${home}" alt="${home}"></a>
-            <div class="topHeader"><a href="home.view?" target="main">${home}</a></div>
+            <a href="home?" target="main"><img src="<spring:theme code='homeImage'/>" title="${home}" alt="${home}"></a>
+            <div class="topHeader"><a href="home?" target="main">${home}</a></div>
         </td>
         <td style="min-width:3em;padding-right:1em;text-align: center">
-            <a href="nowPlaying.view?" target="main"><img src="<spring:theme code='nowPlayingImage'/>" title="${nowPlaying}" alt="${nowPlaying}"></a>
-            <div class="topHeader"><a href="nowPlaying.view?" target="main">${nowPlaying}</a></div>
+            <a href="nowPlaying?" target="main"><img src="<spring:theme code='nowPlayingImage'/>" title="${nowPlaying}" alt="${nowPlaying}"></a>
+            <div class="topHeader"><a href="nowPlaying?" target="main">${nowPlaying}</a></div>
         </td>
         <td style="min-width:3em;padding-right:1em;text-align: center">
-            <a href="starred.view?" target="main"><img src="<spring:theme code='starredImage'/>" title="${starred}" alt="${starred}"></a>
-            <div class="topHeader"><a href="starred.view?" target="main">${starred}</a></div>
+            <a href="starred?" target="main"><img src="<spring:theme code='starredImage'/>" title="${starred}" alt="${starred}"></a>
+            <div class="topHeader"><a href="starred?" target="main">${starred}</a></div>
         </td>
         <td style="min-width:3em;padding-right:1em;text-align: center">
-            <a href="playlists.view?" target="main"><img src="<spring:theme code='playlistImage'/>" title="${playlists}" alt="${playlists}"></a>
-            <div class="topHeader"><a href="playlists.view?" target="main">${playlists}</a></div>
+            <a href="playlists?" target="main"><img src="<spring:theme code='playlistImage'/>" title="${playlists}" alt="${playlists}"></a>
+            <div class="topHeader"><a href="playlists?" target="main">${playlists}</a></div>
         </td>
         <td style="min-width:4em;padding-right:1em;text-align: center">
-            <a href="podcastChannels.view?" target="main"><img src="<spring:theme code='podcastLargeImage'/>" title="${podcast}" alt="${podcast}"></a>
-            <div class="topHeader"><a href="podcastChannels.view?" target="main">${podcast}</a></div>
+            <a href="podcastChannels?" target="main"><img src="<spring:theme code='podcastLargeImage'/>" title="${podcast}" alt="${podcast}"></a>
+            <div class="topHeader"><a href="podcastChannels?" target="main">${podcast}</a></div>
         </td>
         <td style="min-width:4em;padding-right:1em;text-align: center">
-            <a href="bookmarks.view?" target="main"><img src="<spring:theme code='bookmarkImage'/>" title="${bookmarks}" alt="${bookmarks}"></a>
-            <div class="topHeader"><a href="bookmarks.view?" target="main">${bookmarks}</a></div>
+            <a href="bookmarks?" target="main"><img src="<spring:theme code='bookmarkImage'/>" title="${bookmarks}" alt="${bookmarks}"></a>
+            <div class="topHeader"><a href="bookmarks?" target="main">${bookmarks}</a></div>
         </td>
         <c:if test="${model.user.settingsRole}">
             <td style="min-width:3em;padding-right:1em;text-align: center">
-                <a href="settings.view?" target="main"><img src="<spring:theme code='settingsImage'/>" title="${settings}" alt="${settings}"></a>
-                <div class="topHeader"><a href="settings.view?" target="main">${settings}</a></div>
+                <a href="settings?" target="main"><img src="<spring:theme code='settingsImage'/>" title="${settings}" alt="${settings}"></a>
+                <div class="topHeader"><a href="settings?" target="main">${settings}</a></div>
             </td>
         </c:if>
         <td style="min-width:3em;padding-right:1em;text-align: center">
-            <a href="status.view?" target="main"><img src="<spring:theme code='statusImage'/>" title="${status}" alt="${status}"></a>
-            <div class="topHeader"><a href="status.view?" target="main">${status}</a></div>
+            <a href="status?" target="main"><img src="<spring:theme code='statusImage'/>" title="${status}" alt="${status}"></a>
+            <div class="topHeader"><a href="status?" target="main">${status}</a></div>
         </td>
         <td style="min-width:3em;padding-right:1em;text-align: center">
-            <a href="more.view?" target="main"><img src="<spring:theme code='moreImage'/>" title="${more}" alt="${more}"></a>
-            <div class="topHeader"><a href="more.view?" target="main">${more}</a></div>
+            <a href="more?" target="main"><img src="<spring:theme code='moreImage'/>" title="${more}" alt="${more}"></a>
+            <div class="topHeader"><a href="more?" target="main">${more}</a></div>
         </td>
         <td style="min-width:3em;padding-right:1em;text-align: center">
-            <a href="help.view?" target="main"><img src="<spring:theme code='helpImage'/>" title="${help}" alt="${help}"></a>
-            <div class="topHeader"><a href="help.view?" target="main">${help}</a></div>
+            <a href="help?" target="main"><img src="<spring:theme code='helpImage'/>" title="${help}" alt="${help}"></a>
+            <div class="topHeader"><a href="help?" target="main">${help}</a></div>
         </td>
 
         <td style="padding-left:1em">
-            <form method="post" action="search.view" target="main" name="searchForm">
+            <form method="post" action="search" target="main" name="searchForm">
                 <td><input required type="text" name="query" id="query" size="28" placeholder="${search}" onclick="select();"
                            onkeyup="triggerInstantSearch();"></td>
                 <td><a href="javascript:document.searchForm.submit()"><img src="<spring:theme code='searchImage'/>" alt="${search}" title="${search}"></a></td>
@@ -192,11 +192,11 @@
         <td style="padding-left:15pt;padding-right:5pt;vertical-align: middle;width: 100%;text-align: center">
             <div>
             <c:if test="${model.user.settingsRole}">
-              <a href="personalSettings.view" target="main">
+              <a href="personalSettings" target="main">
             </c:if>
             <c:choose>
               <c:when test="${model.showAvatar}">
-                <sub:url value="avatar.view" var="avatarUrl">
+                <sub:url value="avatar" var="avatarUrl">
                   <sub:param name="username" value="${model.user.username}"/>
                 </sub:url>
                 <img src="${avatarUrl}" alt="User" width="30" height="30">
@@ -210,7 +210,7 @@
             </c:if>
               <div class="topHeader">
                 <c:if test="${model.user.settingsRole}">
-                  <a href="personalSettings.view" target="main">
+                  <a href="personalSettings" target="main">
                 </c:if>
                   <c:out value="${model.user.username}" escapeXml="true"/>
                 <c:if test="${model.user.settingsRole}">

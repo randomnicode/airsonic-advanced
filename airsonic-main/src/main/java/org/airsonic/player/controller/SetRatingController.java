@@ -60,6 +60,6 @@ public class SetRatingController {
         String username = securityService.getCurrentUsername(request);
         ratingService.setRatingForUser(username, mediaFile, rating);
 
-        return new ModelAndView(new RedirectView("main.view?id=" + id));
+        return new ModelAndView(new RedirectView("main?id=" + id));
     }
 }

@@ -14,7 +14,7 @@
     <c:param name="restricted" value="${not model.user.adminRole}"/>
 </c:import>
 
-<form method="post" action="shareSettings.view">
+<form method="post" action="shareSettings">
     <sec:csrfInput />
 
     <table class="music indent">
@@ -33,7 +33,7 @@
         <c:forEach items="${model.shareInfos}" var="shareInfo" varStatus="loopStatus">
             <c:set var="share" value="${shareInfo.share}"/>
 
-            <c:url value="main.view" var="albumUrl">
+            <c:url value="main" var="albumUrl">
                 <c:param name="id" value="${shareInfo.dir.id}"/>
             </c:url>
 
@@ -59,7 +59,7 @@
 
     <p style="padding-top:1em">
         <input type="submit" value="<fmt:message key='common.save'/>" style="margin-right:0.3em">
-        <a href='nowPlaying.view'><input type="button" value="<fmt:message key='common.cancel'/>" style="margin-right:2.0em"></a>
+        <a href='nowPlaying'><input type="button" value="<fmt:message key='common.cancel'/>" style="margin-right:2.0em"></a>
         <input type="checkbox" id="deleteExpired" name="deleteExpired"/>
         <label for="deleteExpired"><fmt:message key="sharesettings.deleteexpired"/></label>
     </p>

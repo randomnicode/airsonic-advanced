@@ -619,7 +619,7 @@ public class SonosHelper {
     }
 
     private String getCoverArtUrl(String id, String username, HttpServletRequest request) {
-        String uri = "ext/coverArt.view?id=" + id + "&size=" + CoverArtScheme.LARGE.getSize();
+        String uri = "ext/coverArt?id=" + id + "&size=" + CoverArtScheme.LARGE.getSize();
         return getBaseUrl(request) + jwtSecurityService.addJWTToken(username, uri);
     }
 

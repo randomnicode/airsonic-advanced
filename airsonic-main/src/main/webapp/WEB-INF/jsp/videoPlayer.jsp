@@ -110,10 +110,10 @@
                         instance.buildspeed(instance, instance.getElement(instance.controls), instance.getElement(instance.layers), instance.media);
                     }
                     <c:if test="${model.user.shareRole}">
-                    $("#share").on('click', () => location.href = "createShare.view?id=" + videoModel.videoId);
+                    $("#share").on('click', () => location.href = "createShare?id=" + videoModel.videoId);
                     </c:if>
                     <c:if test="${model.user.downloadRole}">
-                    $("#download").on('click', () => location.href = "download.view?id=" + videoModel.videoId);
+                    $("#download").on('click', () => location.href = "download?id=" + videoModel.videoId);
                     </c:if>
                     // add dimensions to playing vid
                     instance.setSrc($('#videoPlayer source[data-quality="${model.defaultBitRate}"]')[0].src);
@@ -166,7 +166,7 @@
 	         onclick="toggleStar(${model.video.id}, '#starImage'); return false;" title="<fmt:message key='playlist.more.star'/> / <fmt:message key='playlist.more.unstar'/>" alt="<fmt:message key='playlist.more.star'/> / <fmt:message key='playlist.more.unstar'/>">
 	</div>
 
-	<sub:url value="main.view" var="backUrl"><sub:param name="id" value="${model.video.id}"/></sub:url>
+	<sub:url value="main" var="backUrl"><sub:param name="id" value="${model.video.id}"/></sub:url>
 	<div class="back" style="float:left;padding-right:2em;margin-top:1em;"><a href="${backUrl}"><fmt:message key="common.back"/></a></div>
 	<div style="clear: both"></div>
 </div>

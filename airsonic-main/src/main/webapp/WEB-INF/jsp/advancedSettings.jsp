@@ -22,7 +22,7 @@
     <c:param name="toast" value="${settings_toast}"/>
 </c:import>
 
-<form:form method="post" action="advancedSettings.view" modelAttribute="command">
+<form:form method="post" action="advancedSettings" modelAttribute="command">
 
     <table style="white-space:nowrap" class="indent">
         <tr>
@@ -169,7 +169,7 @@
     <p class="warning"><fmt:message key="advancedsettings.ldapRequiresRestart"/></p>
 
     <input type="submit" value="<fmt:message key='common.save'/>" style="margin-right:0.3em">
-    <a href="nowPlaying.view"><input type="button" value="<fmt:message key='common.cancel'/>"></a>
+    <a href="nowPlaying"><input type="button" value="<fmt:message key='common.cancel'/>"></a>
 
 </form:form>
 

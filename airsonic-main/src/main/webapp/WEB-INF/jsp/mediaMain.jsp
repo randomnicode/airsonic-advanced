@@ -54,15 +54,15 @@
 
     function getMediaDirectoryCallback(mediaDirObj) {
         if (mediaDirObj.contentType == 'notFound') {
-            window.location = 'notFound.view?';
+            window.location = 'notFound?';
             return;
         }
         if (mediaDirObj.contentType == 'home') {
-            window.location = 'home.view?';
+            window.location = 'home?';
             return;
         }
         if (mediaDirObj.contentType == 'accessDenied') {
-            window.location = 'accessDenied.view?';
+            window.location = 'accessDenied?';
             return;
         }
 
@@ -156,14 +156,14 @@
     }
 
     function generateMediaDirThumb() {
-        var urlBase = "<c:url value='/coverArtJsp.view'/>";
+        var urlBase = "<c:url value='/coverArtJsp'/>";
         $.get(urlBase + '?coverArtSize=${model.coverArtSizeLarge}&showZoom=true&showChange=${model.user.coverArtRole}&albumId=' + mediaDir.id, data => {
             $('#mediaDirThumb').html(data);
         });
     }
 
     function generateThumbs() {
-        var urlBase = "<c:url value='/coverArtJsp.view'/>";
+        var urlBase = "<c:url value='/coverArtJsp'/>";
         $('#thumbs').html('');
 
         thumbsData.filter(t => t.entryType != 'VIDEO').forEach((t,i) => {
@@ -174,8 +174,8 @@
             });
         });
 
-        var videoUrlBase = "<c:url value='/videoPlayer.view'/>";
-        var covertArtUrlBase = "<c:url value='/coverArt.view'/>";
+        var videoUrlBase = "<c:url value='/videoPlayer'/>";
+        var covertArtUrlBase = "<c:url value='/coverArt'/>";
         thumbsData.filter(t => t.entryType == 'VIDEO').forEach(t => {
             var vidUrl = videoUrlBase + '?id=' + t.id;
             var vid = '' +
@@ -199,7 +199,7 @@
     }
 
     function getRatings() {
-        var urlBase = "<c:url value='/ratingJsp.view'/>";
+        var urlBase = "<c:url value='/ratingJsp'/>";
         if (mediaDir.averageRating && mediaDir.averageRating > 0) {
             $.get(urlBase + '?readonly=true&rating=' + mediaDir.averageRating, data => {
                 $('#avgRating').html('&nbsp;&nbsp;'+data).show();
@@ -665,7 +665,7 @@
                   className: "detail truncate",
                   render: function(album, type, row) {
                       if (type == "display" && album != null) {
-                          return $("<a>", {title: album, alt: album, text: album, target: "main"}).attr("href", "main.view?id=" + row.id)[0].outerHTML;
+                          return $("<a>", {title: album, alt: album, text: album, target: "main"}).attr("href", "main?id=" + row.id)[0].outerHTML;
                       }
                       return album;
                   }
@@ -836,7 +836,7 @@
     function onPlay(row) {
         var data = row.data();
         if (data.entryType == 'VIDEO') {
-            var urlBase = "<c:url value='/videoPlayer.view'/>";
+            var urlBase = "<c:url value='/videoPlayer'/>";
             var url = urlBase + "?id=" + data.id;
             top.main.location = url;
         } else {
@@ -888,9 +888,9 @@
         } else if (id == "unstar" && selectedIndexes.length > 0) {
             onStar(filesTable, selectedIndexes, false);
         } else if (id == "share" && selectedIndexes.length > 0) {
-            location.href = "createShare.view?id=" + mediaDir.id  + "&" + querize(selectedIndexes, "i");
+            location.href = "createShare?id=" + mediaDir.id  + "&" + querize(selectedIndexes, "i");
         } else if (id == "download" && selectedIndexes.length > 0) {
-            location.href = "download.view?id=" + mediaDir.id  + "&" + querize(selectedIndexes, "i");
+            location.href = "download?id=" + mediaDir.id  + "&" + querize(selectedIndexes, "i");
         } else if (id == "appendPlaylist" && selectedIndexes.length > 0) {
             onAppendPlaylist();
         }
@@ -979,7 +979,7 @@
     }
 
     function updatePreview() {
-        videoPreview.image.attr("src", "coverArt.view?id=" + videoPreview.id + "&size=" + videoPreview.size + "&offset=" + videoPreview.offset);
+        videoPreview.image.attr("src", "coverArt?id=" + videoPreview.id + "&size=" + videoPreview.size + "&offset=" + videoPreview.offset);
         videoPreview.offset += videoPreview.step;
         if (videoPreview.offset > videoPreview.duration) {
             stopPreview();
@@ -992,20 +992,20 @@
             videoPreview.timer = null;
         }
         if (videoPreview.image != null) {
-            videoPreview.image.attr("src", "coverArt.view?id=" + videoPreview.id + "&size=" + videoPreview.size);
+            videoPreview.image.attr("src", "coverArt?id=" + videoPreview.id + "&size=" + videoPreview.size);
         }
     }
 
     function editTagsPage() {
-        window.location = "editTags.view?id=" + mediaDir.id;
+        window.location = "editTags?id=" + mediaDir.id;
     }
 
     function downloadAll() {
-        location.href = "download.view?id=" + mediaDir.id;
+        location.href = "download?id=" + mediaDir.id;
     }
 
     function shareAlbum() {
-        location.href = "createShare.view?id=" + mediaDir.id;
+        location.href = "createShare?id=" + mediaDir.id;
     }
 
     function searchExternally(vendor) {
@@ -1130,7 +1130,7 @@
 <div id="comment" class="albumComment"></div>
 
 <div id="commentForm" style="display:none">
-    <form method="post" action="setMusicFileInfo.view">
+    <form method="post" action="setMusicFileInfo">
         <sec:csrfInput />
         <input type="hidden" name="action" value="comment">
         <input type="hidden" id="commentFormId" name="id" value="">

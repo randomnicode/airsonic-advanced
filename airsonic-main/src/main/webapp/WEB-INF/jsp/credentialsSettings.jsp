@@ -119,7 +119,7 @@
 <h2>Credentials Management</h2>
 <div>
 <h3>Credentials</h3>
-<form:form method="put" action="credentialsSettings.view" modelAttribute="command">
+<form:form method="put" action="credentialsSettings" modelAttribute="command">
 <table id="credentialsTable">
   <tr>
     <th style="padding:0 0.5em 0 0.5em;border-style:double">ID</th>
@@ -245,7 +245,7 @@
 </div>
 
 <div id="createNewCreds" style="display:none">
-  <form:form method="post" action="credentialsSettings.view" modelAttribute="newCreds">
+  <form:form method="post" action="credentialsSettings" modelAttribute="newCreds">
     <table style="white-space:nowrap" class="indent">
       <tr>
         <td><fmt:message key="credentialsettings.app"/></td>

@@ -107,7 +107,7 @@ public class PlayerSettingsController {
         command.setPlayers(players.toArray(new Player[players.size()]));
         command.setAdmin(user.isAdminRole());
 
-        model.addAttribute("command",command);
+        model.addAttribute("command", command);
     }
 
     @PostMapping
@@ -156,7 +156,7 @@ public class PlayerSettingsController {
             transcodingService.setTranscodingsForPlayer(player, command.getActiveTranscodingIds());
 
             redirectAttributes.addFlashAttribute("settings_toast", true);
-            return "redirect:playerSettings.view?id=" + command.getPlayerId();
+            return "redirect:playerSettings?id=" + command.getPlayerId();
         } else {
             return "redirect:notFound";
         }

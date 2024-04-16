@@ -192,9 +192,9 @@ public class DatabaseSettingsController {
             settingsService.setDbBackupRetentionCount(command.getDbBackupRetentionCount());
             redirectAttributes.addFlashAttribute("settings_toast", true);
             settingsService.save();
-            return "redirect:databaseSettings.view";
+            return "redirect:databaseSettings";
         } else {
-            return "databaseSettings.view";
+            return "databaseSettings";
         }
     }
 

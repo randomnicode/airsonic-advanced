@@ -210,7 +210,7 @@ public class MusicFolderSettingsController {
         redirectAttributes.addFlashAttribute("settings_reload", success);
 
         mediaScannerService.schedule();
-        return "redirect:musicFolderSettings.view";
+        return "redirect:musicFolderSettings";
     }
 
 }

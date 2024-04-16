@@ -13,7 +13,7 @@
     <c:param name="toast" value="${settings_toast}"/>
 </c:import>
 
-<form:form modelAttribute="command" action="podcastSettings.view" method="post">
+<form:form modelAttribute="command" action="podcastSettings" method="post">
 
 <table class="indent">
     <tr>
@@ -149,7 +149,7 @@
 <div class="tableSpacer"></div>
 <div>
     <input type="submit" value="<fmt:message key='common.save'/>" style="margin-right:0.3em">
-    <a href='nowPlaying.view'><input type="button" value="<fmt:message key='common.cancel'/>"></a>
+    <a href='nowPlaying'><input type="button" value="<fmt:message key='common.cancel'/>"></a>
 </div>
 
 </form:form>
