@@ -5,7 +5,7 @@
     <%@ include file="head.jsp" %>
     <%@ include file="jquery.jsp" %>
     <%@ include file="table.jsp" %>
-    <script type="text/javascript" src="<c:url value='/script/jquery.fancyzoom.js'/>"></script>
+    <script type="text/javascript" src="<c:url value='/script/jquery.fancyzoom.min.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/script/utils.js'/>"></script>
     <style type="text/css">
         #topSongsHeader, #filesHeader, #subDirsHeader {
