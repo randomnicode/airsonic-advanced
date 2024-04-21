@@ -1,6 +1,5 @@
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
-<script type="text/javascript" src="<c:url value='/script/sockjs-1.5.0.min.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/script/stomp-4.0.8.min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/script/stomp-7.0.umd.min.js'/>"></script>
 <script type="text/javascript">
     var csrfheaderName = "${_csrf.headerName}";
     var csrftoken = "${_csrf.token}";
@@ -12,7 +11,7 @@
         onError: [],
         send: function(dest, msg) {
             this.connect(function(stompclient) {
-                stompclient.stompClient.send(dest, {}, msg);
+                stompclient.stompClient.publish({ destination: dest, body: msg });
             });
         },
         state: 'dc',
@@ -39,10 +38,58 @@
                 stompclient.outstandingConnectionCallbacks.push(postConnectCallback);
             }
             if (stompclient.stompClient == null) {
-                var socket = new SockJS("<c:url value='/websocket'/>");
-                stompclient.stompClient = Stomp.over(socket);
-                stompclient.stompClient.heartbeat.incoming = 20000;
-                stompclient.stompClient.heartbeat.outgoing = 20000;
+                var headers = {};
+                if (csrfheaderName != "" && csrftoken != "") {
+                    headers[csrfheaderName] = csrftoken;
+                }
+                stompclient.stompClient = new StompJs.Client({
+                    brokerURL: "${wsUri}",
+                    heartbeatIncoming: 20000,
+                    heartbeatOutgoing: 20000,
+                    connectHeaders: headers
+                });
+                stompclient.stompClient.onConnect = (frame) => {
+                    console.log('Connected', frame);
+                    stompclient.state='connected';
+                    for (var i = 0; i < stompclient.onConnect.length; i++) {
+                        try {
+                            stompclient.onConnect[i](frame, stompclient);
+                        } catch (e) {
+                            console.log("Could not execute an onConnect callback", e);
+                        }
+                    }
+                    stompclient.__doConnectionCallbacks(stompclient);
+                };
+
+                stompclient.stompClient.onWebSocketError = (error) => {
+                    console.error('Websocket Error', error);
+                    for (var i = 0; i < stompclient.onError.length; i++) {
+                        try {
+                            stompclient.onError[i](frame, stompclient);
+                        } catch (e) {
+                            console.log("Could not execute an onError callback", e);
+                        }
+                    }
+                };
+
+                stompclient.stompClient.onStompError = (frame) => {
+                    console.error('Broker reported Stomp error: ' + frame.headers['message']);
+                    console.error('Additional details: ' + frame.body);
+                };
+
+                stompclient.stompClient.onDisconnect = (frame) => {
+                    console.log('Disconnected', frame);
+                    stompclient.stompClient = null;
+                    stompclient.state='dc';
+                    for (var i = 0; i < stompclient.onDisconnect.length; i++) {
+                        try {
+                            stompclient.onDisconnect[i](frame, stompclient);
+                        } catch (e) {
+                            console.log("Could not execute an onDisconnect callback", e);
+                        }
+                    }
+                };
+
                 // resubscribe to everything again
                 stompclient.resubscriptionCallback = function() {
                     for (var topic in stompclient.subscriptions) {
@@ -65,42 +112,8 @@
                         console.log("Could not execute an onConnecting callback", e);
                     }
                 }
-                var headers = {};
-                if (csrfheaderName != "" && csrftoken != "") {
-                    headers[csrfheaderName] = csrftoken;
-                }
-                stompclient.stompClient.connect(headers, function(frame) {
-                    console.log('Connected', frame);
-                    stompclient.state='connected';
-                    for (var i = 0; i < stompclient.onConnect.length; i++) {
-                        try {
-                            stompclient.onConnect[i](frame, stompclient);
-                        } catch (e) {
-                            console.log("Could not execute an onConnect callback", e);
-                        }
-                    }
-                    stompclient.__doConnectionCallbacks(stompclient);
-                }, function(frame) {
-                    console.log('Error', frame);
-                    for (var i = 0; i < stompclient.onError.length; i++) {
-                        try {
-                            stompclient.onError[i](frame, stompclient);
-                        } catch (e) {
-                            console.log("Could not execute an onError callback", e);
-                        }
-                    }
-                }, function(frame) {
-                    console.log('Disconnected', frame);
-                    stompclient.stompClient = null;
-                    stompclient.state='dc';
-                    for (var i = 0; i < stompclient.onDisconnect.length; i++) {
-                        try {
-                            stompclient.onDisconnect[i](frame, stompclient);
-                        } catch (e) {
-                            console.log("Could not execute an onDisconnect callback", e);
-                        }
-                    }
-                });
+
+                stompclient.stompClient.activate();
             }
         },
         // object containing:
@@ -156,18 +169,8 @@
         disconnect: function() {
             var stompclient = this;
             if (stompclient.stompClient != null) {
-                stompclient.stompClient.disconnect(function(frame) {
-                    console.log('Disconnected from Airsonic websocket');
-                    stompclient.stompClient = null;
-                    stompclient.state='dc';
-                    for (var i = 0; i < stompclient.onDisconnect.length; i++) {
-                        try {
-                            stompclient.onDisconnect[i](frame, stompclient);
-                        } catch (e) {
-                            console.log("Could not execute an onDisconnect callback", e);
-                        }
-                    }
-                });
+                stompclient.stompClient.deactivate();
+                console.log('Disconnected from Airsonic websocket');
             }
         }
     }

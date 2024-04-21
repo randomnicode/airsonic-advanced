@@ -62,13 +62,13 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
         config.setPreservePublishOrder(true);
     }
 
+    public static String STOMP_ENDPOINT = "websocket";
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/websocket")
+        registry.addEndpoint("/" + STOMP_ENDPOINT)
                 .setAllowedOriginPatterns("*")
-                .addInterceptors(new ServletRequestCaptureHandshakeInterceptor(contextPath))
-                .withSockJS()
-                .setClientLibraryUrl("../../script/sockjs-1.5.0.min.js");
+                .addInterceptors(new ServletRequestCaptureHandshakeInterceptor(contextPath));
     }
 
     public static class ServletRequestCaptureHandshakeInterceptor implements HandshakeInterceptor {

@@ -21,6 +21,7 @@ package org.airsonic.player.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.airsonic.player.service.NetworkService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,6 +46,8 @@ public class LyricsController {
         map.put("artist", request.getParameter("artist"));
         map.put("song", request.getParameter("song"));
 
-        return new ModelAndView("lyrics","model",map);
+        request.setAttribute("wsUri", NetworkService.getWebsocketUri(request));
+
+        return new ModelAndView("lyrics","model", map);
     }
 }

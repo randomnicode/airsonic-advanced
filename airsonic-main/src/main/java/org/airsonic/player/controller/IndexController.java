@@ -2,6 +2,7 @@ package org.airsonic.player.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.airsonic.player.domain.UserSettings;
+import org.airsonic.player.service.NetworkService;
 import org.airsonic.player.service.SecurityService;
 import org.airsonic.player.service.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +27,15 @@ public class IndexController {
     public ModelAndView index(HttpServletRequest request) {
         UserSettings userSettings = settingsService.getUserSettings(securityService.getCurrentUsername(request));
 
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("showRight", userSettings.getShowNowPlayingEnabled());
         map.put("autoHidePlayQueue", userSettings.getAutoHidePlayQueue());
         map.put("keyboardShortcutsEnabled", userSettings.getKeyboardShortcutsEnabled());
         map.put("showSideBar", userSettings.getShowSideBar());
         map.put("brand", settingsService.getBrand());
+
+        request.setAttribute("wsUri", NetworkService.getWebsocketUri(request));
+
         return new ModelAndView("index", "model", map);
     }
 }

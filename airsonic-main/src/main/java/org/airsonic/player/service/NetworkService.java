@@ -45,6 +45,10 @@ public class NetworkService {
 
     private final static Logger LOG = LoggerFactory.getLogger(NetworkService.class);
 
+    public static String getWebsocketUri(HttpServletRequest request) {
+        return getBaseUrl(request).replaceFirst("http", "ws") + WebsocketConfiguration.STOMP_ENDPOINT;
+    }
+
     public static String getBaseUrl(SimpMessageHeaderAccessor websocketHeaders) {
         return getBaseUrl((HttpServletRequest) websocketHeaders.getSessionAttributes().get(WebsocketConfiguration.UNDERLYING_SERVLET_REQUEST));
     }
@@ -55,15 +59,15 @@ public class NetworkService {
             try {
                 uri = calculateProxyUri(request);
             } catch (Exception e) {
-                LOG.debug("Could not calculate proxy uri: " + e.getMessage());
+                LOG.debug("Could not calculate proxy uri", e);
                 uri = calculateNonProxyUri(request);
             }
 
-            String baseUrl = uri.toString() + "/";
-            LOG.debug("Calculated base url to " + baseUrl);
+            String baseUrl = uri + "/";
+            LOG.debug("Calculated base url to {}", baseUrl);
             return baseUrl;
         } catch (MalformedURLException | URISyntaxException e) {
-            throw new RuntimeException("Could not calculate base url: " + e.getMessage());
+            throw new RuntimeException("Could not calculate base url: " + e.getMessage(), e);
         }
     }
 
