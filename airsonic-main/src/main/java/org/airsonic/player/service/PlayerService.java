@@ -29,19 +29,19 @@ import org.airsonic.player.domain.Player;
 import org.airsonic.player.domain.Transcoding;
 import org.airsonic.player.domain.User;
 import org.airsonic.player.domain.User.Role;
+import org.airsonic.player.spring.WebsocketConfiguration;
 import org.airsonic.player.util.StringUtil;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Provides services for maintaining the set of players.
@@ -72,6 +72,56 @@ public class PlayerService {
         playerDao.deleteOldPlayers(60);
     }
 
+    public synchronized Player getPlayer(int playerId, SimpMessageHeaderAccessor headers) throws Exception {
+        Player player = getPlayerById(playerId);
+
+        // Find by 'player' request parameter.
+        if (player == null) {
+            player = getPlayerById(
+                    Optional.ofNullable((Map<String, String[]>) headers.getSessionAttributes().get(WebsocketConfiguration.REQUEST_PARAMETERS))
+                            .map(m -> m.getOrDefault("player", new String[] { null })[0])
+                            .map(Integer::parseInt)
+                            .orElse(null)
+            );
+        }
+
+        // Find in session context.
+        if (player == null) {
+            player = getPlayerById((Integer) ((Map<String, Object>) headers.getSessionAttributes().get(WebsocketConfiguration.REQUEST_SESSION_ATTRIBUTES)).get("player"));
+        }
+
+        // Find by cookie.
+        String username = headers.getUser().getName();
+        if (player == null) {
+            player = getPlayerById(getPlayerIdFromCookie((Cookie[]) headers.getSessionAttributes().get(WebsocketConfiguration.REQUEST_COOKIES), username));
+        }
+
+        // Make sure we're not hijacking the player of another user.
+        if (player != null && player.getUsername() != null && username != null && !player.getUsername().equals(username)) {
+            player = null;
+        }
+
+        // Look for player with same IP address and user name.
+        if (player == null) {
+            player = getNonRestPlayerByIpAddressAndUsername((String) headers.getSessionAttributes().get(WebsocketConfiguration.CLIENT_IP), username);
+        }
+
+        // If no player was found, create it.
+        if (player == null) {
+            player = new Player();
+            player.setLastSeen(Instant.now());
+            populatePlayer(player, username, (String) headers.getSessionAttributes().get(WebsocketConfiguration.CLIENT_IP), null);
+            createPlayer(player);
+        } else if (populatePlayer(player, username, (String) headers.getSessionAttributes().get(WebsocketConfiguration.CLIENT_IP), null)) {
+            updatePlayer(player);
+        }
+
+        // Save player in session context.
+        ((Map<String, Object>) headers.getSessionAttributes().get(WebsocketConfiguration.REQUEST_SESSION_ATTRIBUTES)).put("player", player.getId());
+
+        return player;
+    }
+
     public Player getPlayer(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return getPlayer(request, response, true, false);
     }
@@ -80,6 +130,7 @@ public class PlayerService {
             boolean isStreamRequest) throws Exception {
         return getPlayer(request, response, null, remoteControlEnabled, isStreamRequest);
     }
+
     /**
      * Returns the player associated with the given HTTP request.  If no such player exists, a new
      * one is created.
@@ -111,7 +162,7 @@ public class PlayerService {
         // Find by cookie.
         String username = securityService.getCurrentUsername(request);
         if (player == null && remoteControlEnabled) {
-            player = getPlayerById(getPlayerIdFromCookie(request, username));
+            player = getPlayerById(getPlayerIdFromCookie(request.getCookies(), username));
         }
 
         // Make sure we're not hijacking the player of another user.
@@ -128,9 +179,9 @@ public class PlayerService {
         if (player == null) {
             player = new Player();
             player.setLastSeen(Instant.now());
-            populatePlayer(player, username, request, isStreamRequest);
+            populatePlayer(player, username, request.getRemoteAddr(), isStreamRequest ? request.getHeader("user-agent") : null);
             createPlayer(player);
-        } else if (populatePlayer(player, username, request, isStreamRequest)) {
+        } else if (populatePlayer(player, username, request.getRemoteAddr(), isStreamRequest ? request.getHeader("user-agent") : null)) {
             updatePlayer(player);
         }
 
@@ -156,21 +207,20 @@ public class PlayerService {
         return player;
     }
 
-    private boolean populatePlayer(Player player, String username, HttpServletRequest request, boolean isStreamRequest) {
+    private boolean populatePlayer(Player player, String username, String clientIpAddress, String streamingUserAgent) {
         // Update player data.
         boolean isUpdate = false;
         if (username != null && player.getUsername() == null) {
             player.setUsername(username);
             isUpdate = true;
         }
-        if (!StringUtils.equals(request.getRemoteAddr(), player.getIpAddress()) &&
-                (player.getIpAddress() == null || isStreamRequest || (!isPlayerConnected(player) && player.getDynamicIp()))) {
-            player.setIpAddress(request.getRemoteAddr());
+        if (!StringUtils.equals(clientIpAddress, player.getIpAddress()) &&
+                (player.getIpAddress() == null || streamingUserAgent != null || (!isPlayerConnected(player) && player.getDynamicIp()))) {
+            player.setIpAddress(clientIpAddress);
             isUpdate = true;
         }
-        String userAgent = request.getHeader("user-agent");
-        if (isStreamRequest) {
-            player.setType(userAgent);
+        if (streamingUserAgent != null) {
+            player.setType(streamingUserAgent);
             player.setLastSeen(Instant.now());
             isUpdate = true;
         }
@@ -241,12 +291,11 @@ public class PlayerService {
     /**
      * Reads the player ID from the cookie in the HTTP request.
      *
-     * @param request  The HTTP request.
+     * @param cookies  The HTTP request cookies.
      * @param username The name of the current user.
      * @return The player ID embedded in the cookie, or <code>null</code> if cookie is not present.
      */
-    private Integer getPlayerIdFromCookie(HttpServletRequest request, String username) {
-        Cookie[] cookies = request.getCookies();
+    private Integer getPlayerIdFromCookie(Cookie[] cookies, String username) {
         if (cookies == null) {
             return null;
         }

@@ -50,7 +50,7 @@ public class NetworkService {
     }
 
     public static String getBaseUrl(SimpMessageHeaderAccessor websocketHeaders) {
-        return getBaseUrl((HttpServletRequest) websocketHeaders.getSessionAttributes().get(WebsocketConfiguration.UNDERLYING_SERVLET_REQUEST));
+        return (String) websocketHeaders.getSessionAttributes().get(WebsocketConfiguration.BASE_URL);
     }
 
     public static String getBaseUrl(HttpServletRequest request) {
