@@ -4,7 +4,6 @@ import jakarta.servlet.Filter;
 import jakarta.servlet.Servlet;
 import org.airsonic.player.controller.PodcastController;
 import org.airsonic.player.filter.BootstrapVerificationFilter;
-import org.airsonic.player.filter.MetricsFilter;
 import org.airsonic.player.filter.ParameterDecodingFilter;
 import org.airsonic.player.filter.RESTFilter;
 import org.airsonic.player.filter.RequestEncodingFilter;
@@ -121,18 +120,6 @@ public class ServletConfiguration implements WebMvcConfigurer {
     @Bean
     public Filter noCacheFilter() {
         return new ResponseHeaderFilter();
-    }
-
-    @Bean
-    public FilterRegistrationBean<Filter> metricsFilterRegistration() {
-        FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>(metricsFilter());
-        registration.setOrder(7);
-        return registration;
-    }
-
-    @Bean
-    public Filter metricsFilter() {
-        return new MetricsFilter();
     }
 
     @Bean
