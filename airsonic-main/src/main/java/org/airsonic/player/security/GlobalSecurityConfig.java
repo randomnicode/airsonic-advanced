@@ -100,9 +100,6 @@ public class GlobalSecurityConfig {
     public static final Set<String> NONLEGACY_NONDECODABLE_ENCODERS = Sets.difference(NONLEGACY_ENCODERS, DECODABLE_ENCODERS);
 
     @Autowired
-    private CsrfSecurityRequestMatcher csrfSecurityRequestMatcher;
-
-    @Autowired
     private SecurityService securityService;
 
     @Autowired
@@ -223,7 +220,7 @@ public class GlobalSecurityConfig {
 
         http
                 .securityMatcher("/ext/**")
-                .csrf(csrf -> csrf.requireCsrfProtectionMatcher(csrfSecurityRequestMatcher))
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/rest/**", "/search", "/websocket/**", "/actuator/caches/**"))
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/ext/stream/**", "/ext/coverArt*", "/ext/share/**", "/ext/hls/**", "/ext/captions**")
@@ -254,8 +251,8 @@ public class GlobalSecurityConfig {
                 .cors(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
                 .addFilterAfter(restAuthenticationFilter, BasicAuthenticationFilter.class)
-                .csrf(csrf -> csrf.ignoringRequestMatchers(antMatcher("/ws/Sonos/**")).requireCsrfProtectionMatcher(csrfSecurityRequestMatcher))
-                .headers(headers -> headers.frameOptions(frameOptionsConfig -> frameOptionsConfig.sameOrigin()))
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/ws/Sonos/**", "/rest/**", "/search", "/websocket/**", "/actuator/caches/**"))
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(authz -> authz
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR)
                         .permitAll()
