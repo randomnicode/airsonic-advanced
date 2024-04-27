@@ -138,7 +138,7 @@ public class VideoPlayerController {
             String streamUrlWithoutBitrates = baseUrl + "stream?id=" + file.getId() + "&player=" + playerId;
             streamUrls = Stream
                     .concat(Stream.of(Pair.of("Original", streamUrlWithoutBitrates + "&format=raw")),
-                            BIT_RATES.stream().sequential()
+                            BIT_RATES.stream()
                                 .map(b -> Pair.of(b + " Kbps", streamUrlWithoutBitrates + "&format=mp4&maxBitRate=" + b)))
                     .collect(Collectors.toMap(p -> p.getLeft(), p -> p.getRight(), (a,b) -> a, () -> new LinkedHashMap<>()));
             streamUrls.put("remoteStreamUrl", baseUrl + jwtSecurityService.addJWTToken(user.getUsername(),
