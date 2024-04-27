@@ -7,19 +7,19 @@
     <%@ include file="head.jsp" %>
     <%@ include file="jquery.jsp" %>
     <meta name="og:type" content="album"/>
-    <script type="text/javascript" src="<c:url value='/script/mediaelement/mediaelement-and-player.min.js'/>"></script>
-    <script type="text/javascript" src="<c:url value='/script/mediaelement/plugins/playlist/playlist.js'/>"></script>
-    <script src="<c:url value='/script/mediaelement/plugins/speed/speed.min.js'/>"></script>
-    <script src="<c:url value='/script/mediaelement/plugins/speed/speed-i18n.js'/>"></script>
-    <script src="<c:url value='/script/mediaelement/plugins/quality/quality.min.js'/>"></script>
-    <script src="<c:url value='/script/mediaelement/plugins/quality/quality-i18n.js'/>"></script>
-    <script src="<c:url value='/script/mediaelement/plugins/chromecast/chromecast.js'/>"></script>
-    <script src="<c:url value='/script/mediaelement/plugins/chromecast/chromecast-i18n.js'/>"></script>
+    <script type="text/javascript" src="<c:url value='/script/mediaelement-7.0.3/mediaelement-and-player.min.js'/>"></script>
+    <script type="text/javascript" src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/playlist/playlist.js'/>"></script>
+    <script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/speed/speed.min.js'/>"></script>
+    <script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/speed/speed-i18n.js'/>"></script>
+    <script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/quality/quality.min.js'/>"></script>
+    <script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/quality/quality-i18n.js'/>"></script>
+    <script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/chromecast/chromecast.js'/>"></script>
+    <script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/chromecast/chromecast-i18n.js'/>"></script>
 
-    <link type="text/css" rel="stylesheet" href="<c:url value='/script/mediaelement/plugins/playlist/playlist.min.css'/>">
-    <link rel="stylesheet" href="<c:url value='/script/mediaelement/plugins/speed/speed.min.css'/>">
-    <link rel="stylesheet" href="<c:url value='/script/mediaelement/plugins/quality/quality.min.css'/>">
-    <link rel="stylesheet" href="<c:url value='/script/mediaelement/plugins/chromecast/chromecast.min.css'/>">
+    <link type="text/css" rel="stylesheet" href="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/playlist/playlist.min.css'/>">
+    <link rel="stylesheet" href="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/speed/speed.min.css'/>">
+    <link rel="stylesheet" href="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/quality/quality.min.css'/>">
+    <link rel="stylesheet" href="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/chromecast/chromecast.min.css'/>">
 
     <c:if test="${not empty model.media}">
         <meta name="og:title"
@@ -69,9 +69,11 @@
 
 <script type="text/javascript">
     var player = new MediaElementPlayer('player', {
+        iconSprite: "<c:url value='/script/mediaelement-7.0.3/mejs-controls.svg'/>",
         useDefaultControls: true,
         features: ['speed', 'quality', 'chromecast', 'playlist', 'prevtrack', 'nexttrack', 'shuffle', 'loop'],
         currentMessage: "",
+        iconPathQuality: false,
         defaultSpeed: "1.00",
         speeds: ["8.00", "2.00", "1.50", "1.25", "1.00", "0.75", "0.5"],
         castTitle: "Airsonic",

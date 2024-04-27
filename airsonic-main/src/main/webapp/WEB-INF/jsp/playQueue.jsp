@@ -3,13 +3,13 @@
 <%@ include file="jquery.jsp" %>
 <%@ include file="table.jsp" %>
 <script type="text/javascript" src="<c:url value='/script/utils.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/script/mediaelement/mediaelement-and-player.min.js'/>"></script>
-<script src="<c:url value='/script/mediaelement/plugins/speed/speed.min.js'/>"></script>
-<script src="<c:url value='/script/mediaelement/plugins/speed/speed-i18n.js'/>"></script>
-<script src="<c:url value='/script/mediaelement/plugins/chromecast/chromecast.min.js'/>"></script>
-<script src="<c:url value='/script/mediaelement/plugins/chromecast/chromecast-i18n.js'/>"></script>
-<link rel="stylesheet" href="<c:url value='/script/mediaelement/plugins/speed/speed.min.css'/>">
-<link rel="stylesheet" href="<c:url value='/script/mediaelement/plugins/chromecast/chromecast.min.css'/>">
+<script type="text/javascript" src="<c:url value='/script/mediaelement-7.0.3/mediaelement-and-player.min.js'/>"></script>
+<script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/speed/speed.min.js'/>"></script>
+<script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/speed/speed-i18n.js'/>"></script>
+<script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/chromecast/chromecast.min.js'/>"></script>
+<script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/chromecast/chromecast-i18n.js'/>"></script>
+<link rel="stylesheet" href="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/speed/speed.min.css'/>">
+<link rel="stylesheet" href="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/chromecast/chromecast.min.css'/>">
 
 <style type="text/css">
     .ui-slider .ui-slider-handle {
@@ -679,6 +679,7 @@
             var pq = this;
             // Manually run MediaElement.js initialization.
             this.audioPlayer = new MediaElementPlayer("audioPlayer", {
+                iconSprite: "<c:url value='/script/mediaelement-7.0.3/mejs-controls.svg'/>",
                 alwaysShowControls: true,
                 enableKeyboard: false,
                 useDefaultControls: true,

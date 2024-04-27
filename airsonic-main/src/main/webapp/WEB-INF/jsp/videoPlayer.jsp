@@ -5,19 +5,22 @@
 <head>
     <%@ include file="head.jsp" %>
     <%@ include file="jquery.jsp" %>
-    <script type="text/javascript" src="<c:url value='/script/mediaelement/mediaelement-and-player.min.js'/>"></script>
-    <script src="<c:url value='/script/mediaelement/plugins/speed/speed.min.js'/>"></script>
-    <script src="<c:url value='/script/mediaelement/plugins/speed/speed-i18n.js'/>"></script>
-    <script src="<c:url value='/script/mediaelement/plugins/quality/quality.min.js'/>"></script>
-    <script src="<c:url value='/script/mediaelement/plugins/quality/quality-i18n.js'/>"></script>
-    <script src="<c:url value='/script/mediaelement/plugins/chromecast/chromecast.min.js'/>"></script>
-    <script src="<c:url value='/script/mediaelement/plugins/chromecast/chromecast-i18n.js'/>"></script>
-    <link rel="stylesheet" type="text/css" href="<c:url value='/style/videoPlayer.css'/>">
-    <link rel="stylesheet" href="<c:url value='/script/mediaelement/plugins/speed/speed.min.css'/>">
-    <link rel="stylesheet" href="<c:url value='/script/mediaelement/plugins/quality/quality.min.css'/>">
-    <link rel="stylesheet" href="<c:url value='/script/mediaelement/plugins/chromecast/chromecast.min.css'/>">
+    <script type="text/javascript" src="<c:url value='/script/mediaelement-7.0.3/mediaelement-and-player.min.js'/>"></script>
+    <script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/speed/speed.min.js'/>"></script>
+    <script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/speed/speed-i18n.js'/>"></script>
+    <script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/quality/quality.min.js'/>"></script>
+    <script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/quality/quality-i18n.js'/>"></script>
+    <script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/chromecast/chromecast.min.js'/>"></script>
+    <script src="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/chromecast/chromecast-i18n.js'/>"></script>
+    <link rel="stylesheet" href="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/speed/speed.min.css'/>">
+    <link rel="stylesheet" href="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/quality/quality.min.css'/>">
+    <link rel="stylesheet" href="<c:url value='/script/mediaelement-7.0.3/plugins-4.0.0/chromecast/chromecast.min.css'/>">
 
     <style type="text/css">
+        html, body {
+            height: 100%;
+        }
+
         .ui-slider .ui-slider-handle {
             width: 11px;
             height: 11px;
@@ -29,10 +32,40 @@
         .ui-slider {
             cursor: pointer;
         }
+
+        .vid-flex-container {
+            width:100%;
+            height:100%;
+            display:flex;
+            flex-direction:column;
+            justify-content:flex-end;
+        }
+
+        .vid-div {
+            flex:1 1 auto;
+        }
+
         #videoPlayer {
             height: 100%;
             width: 100%;
         }
+
+        .vid-title {
+            padding-top:1em;
+            padding-bottom:0.5em;
+        }
+
+        #share, #download, #starImage {
+            cursor: pointer;
+            margin: 0 0.5em 0 0.5em;
+        }
+
+        .back {
+            padding-right:2em;
+            margin-top:1em;
+            margin-bottom:5em
+        }
+
     </style>
 
     <script type="text/javascript" language="javascript">
@@ -83,6 +116,7 @@
             });
             var vpr = this;
             this.videoPlayer = new MediaElementPlayer("videoPlayer", {
+                iconSprite: "<c:url value='/script/mediaelement-7.0.3/mejs-controls.svg'/>",
                 alwaysShowControls: true,
                 enableKeyboard: true,
                 useDefaultControls: true,
@@ -90,11 +124,12 @@
                 castAppID: "4FBFE470",
                 features: ["speed", "quality", "chromecast"],
                 hls: {
-                    path: "<c:url value='/script/mediaelement/renderers/hls-1.0.10/hls.min.js'/>"
+                    path: "<c:url value='/script/mediaelement-7.0.3/renderers/hls-1.5.8/hls.min.js'/>"
                 },
                 dash: {
-                    path: "<c:url value='/script/mediaelement/renderers/dash.all-4.0.1.min.js'/>"
+                    path: "<c:url value='/script/mediaelement-7.0.3/renderers/dash-4.7.4/dash.all.min.js'/>"
                 },
+                iconPathQuality: false,
                 defaultSpeed: "1.00",
                 speeds: ["8.00", "2.00", "1.50", "1.25", "1.00", "0.75", "0.5"],
                 defaultQuality: "${model.defaultBitRate}",
@@ -135,8 +170,8 @@
 
 <body class="mainframe bgcolor1" style="padding-bottom:0.5em" onload="init();">
 
-<div style="width:100%;height:100%;display:flex;flex-direction:column;">
-    <div style="flex:0 1 auto">
+<div class="vid-flex-container">
+    <div class="vid-div">
 		<video id="videoPlayer">
 		  <c:forEach items="${model.streamUrls}" var="streamUrl">
 		    <source src="${streamUrl.value}" data-quality="${streamUrl.key}" type="${model.streamType}">
@@ -151,7 +186,7 @@
 		</video>
 	</div>
 
-	<h1 style="padding-top:1em;padding-bottom:0.5em;">
+	<h1 class="vid-title">
 	    <span style="vertical-align:middle">${fn:escapeXml(model.video.title)}</span>
 	</h1>
 
@@ -167,8 +202,7 @@
 	</div>
 
 	<sub:url value="main" var="backUrl"><sub:param name="id" value="${model.video.id}"/></sub:url>
-	<div class="back" style="float:left;padding-right:2em;margin-top:1em;"><a href="${backUrl}"><fmt:message key="common.back"/></a></div>
-	<div style="clear: both"></div>
+	<div class="back"><a href="${backUrl}"><fmt:message key="common.back"/></a></div>
 </div>
 
 </body>
