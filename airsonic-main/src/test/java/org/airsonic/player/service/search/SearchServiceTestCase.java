@@ -1,9 +1,6 @@
 
 package org.airsonic.player.service.search;
 
-import com.codahale.metrics.ConsoleReporter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import org.airsonic.player.dao.AlbumDao;
 import org.airsonic.player.dao.MusicFolderDao;
 import org.airsonic.player.domain.Album;
@@ -27,14 +24,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class SearchServiceTestCase extends AbstractAirsonicHomeTest {
 
     @Autowired
     private AlbumDao albumDao;
-
-    private final MetricRegistry metrics = new MetricRegistry();
 
     @Autowired
     private MusicFolderDao musicFolderDao;
@@ -321,10 +315,6 @@ public class SearchServiceTestCase extends AbstractAirsonicHomeTest {
         String[] randomWords4Search = createRandomWords(countForEachMethod);
         String[] randomWords4SearchByName = createRandomWords(countForEachMethod);
 
-        Timer globalTimer = metrics
-                .timer(MetricRegistry.name(SearchServiceTestCase.class, "Timer.global"));
-        final Timer.Context globalTimerContext = globalTimer.time();
-
         System.out.println("--- Random search (" + countForEachMethod * 5 + " times) ---");
 
         // testSearch()
@@ -359,8 +349,6 @@ public class SearchServiceTestCase extends AbstractAirsonicHomeTest {
             searchService.getRandomAlbumsId3(Integer.MAX_VALUE, allMusicFolders);
         }
 
-        globalTimerContext.stop();
-
         /*
          * Whether or not IndexReader is exhausted.
          */
@@ -380,10 +368,6 @@ public class SearchServiceTestCase extends AbstractAirsonicHomeTest {
                 result.getMediaFiles().get(0).getArtist());
 
         System.out.println("--- SUCCESS ---");
-
-        ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics)
-                .convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS).build();
-        reporter.report();
 
         System.out.println("End. ");
     }

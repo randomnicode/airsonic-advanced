@@ -1,8 +1,5 @@
 package org.airsonic.player.service;
 
-import com.codahale.metrics.ConsoleReporter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import com.google.common.io.Resources;
 import org.airsonic.player.TestCaseUtils;
 import org.airsonic.player.api.ScanningTestUtils;
@@ -35,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -59,8 +55,6 @@ public class MediaScannerServiceTestCase {
 
     @ClassRule
     public static final HomeRule airsonicRule = new HomeRule();
-
-    private final MetricRegistry metrics = new MetricRegistry();
 
     @Autowired
     private MediaScannerService mediaScannerService;
@@ -106,12 +100,8 @@ public class MediaScannerServiceTestCase {
      */
     @Test
     public void testScanLibrary() {
-        Timer globalTimer = metrics.timer(MetricRegistry.name(MediaScannerServiceTestCase.class, "Timer.global"));
-
-        Timer.Context globalTimerContext = globalTimer.time();
         List<MusicFolder> testFolders = MusicFolderTestData.getTestMusicFolders();
         cleanupId = ScanningTestUtils.before(testFolders, mediaFolderService, mediaScannerService);
-        globalTimerContext.stop();
 
         // Music Folder Music must have 3 children
         List<MediaFile> listeMusicChildren = mediaFileDao.getChildrenOf("", testFolders.get(0).getId(), false);
@@ -135,13 +125,6 @@ public class MediaScannerServiceTestCase {
 
         List<MediaFile> listeSongs = mediaFileDao.getSongsByGenre("Baroque Instrumental", 0, Integer.MAX_VALUE, musicFolderDao.getAllMusicFolders());
         Assert.assertEquals(2, listeSongs.size());
-
-        // display out metrics report
-        ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics)
-                .convertRatesTo(TimeUnit.SECONDS)
-                .convertDurationsTo(TimeUnit.MILLISECONDS)
-                .build();
-        reporter.report();
 
         System.out.print("End");
     }
