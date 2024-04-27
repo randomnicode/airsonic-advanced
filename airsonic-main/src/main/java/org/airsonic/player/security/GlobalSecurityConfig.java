@@ -224,7 +224,7 @@ public class GlobalSecurityConfig {
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/rest/**", "/search", "/websocket/**", "/actuator/caches/**"))
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/ext/stream/**", "/ext/coverArt*", "/ext/share/**", "/ext/hls/**", "/ext/captions**")
+                        .requestMatchers("/ext/stream/**", "/ext/coverArt*", "/ext/share/**", "/ext/hls/**", "/ext/captions/**")
                         .hasAnyRole("TEMP", "USER")
                 )
                 .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS).sessionFixation(sessionFixationConfigurer -> sessionFixationConfigurer.none()))
