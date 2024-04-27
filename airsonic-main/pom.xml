@@ -15,8 +15,6 @@
     <properties>
         <chameleon.version>2.0.0-RELEASE</chameleon.version>
         <tomcat.server.scope>provided</tomcat.server.scope>
-        <!-- For fixing import/export due to https://github.com/liquibase/liquibase/issues/1598 -->
-        <!--<liquibase.version>4.6.2</liquibase.version>-->
     </properties>
 
     <dependencies>
@@ -75,6 +73,16 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-aspects</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.aspectj</groupId>
+                    <artifactId>aspectjrt</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -634,6 +642,9 @@
                 <configuration>
                     <mainClass>org.airsonic.player.Application</mainClass>
                     <layout>WAR</layout>
+                    <compilerArguments>
+                        <arg>-parameters</arg>
+                    </compilerArguments>
                 </configuration>
             </plugin>
             <plugin>
@@ -704,6 +715,10 @@
                          <aspectLibrary>
                              <groupId>org.springframework</groupId>
                              <artifactId>spring-aspects</artifactId>
+                         </aspectLibrary>
+                         <aspectLibrary>
+                             <groupId>org.springframework.security</groupId>
+                             <artifactId>spring-security-aspects</artifactId>
                          </aspectLibrary>
                      </aspectLibraries>
                 </configuration>

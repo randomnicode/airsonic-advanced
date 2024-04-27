@@ -96,7 +96,7 @@ public class CacheConfiguration {
 
         @Override
         public void onEvent(CacheEvent<?, ?> cacheEvent) {
-            LOG.info("Cache Key: {} | EventType: {} | Old value: {} | New value: {}", cacheEvent.getKey(),
+            LOG.debug("Cache Key: {} | EventType: {} | Old value: {} | New value: {}", cacheEvent.getKey(),
                     cacheEvent.getType(), cacheEvent.getOldValue(), cacheEvent.getNewValue());
         }
     }
