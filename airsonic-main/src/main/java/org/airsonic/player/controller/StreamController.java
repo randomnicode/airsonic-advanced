@@ -204,7 +204,7 @@ public class StreamController {
         TransferStatus status = statusService.createStreamStatus(player);
 
         Consumer<MediaFile> fileStartListener = mediaFile -> {
-            LOG.info("{}: {} listening to {} in folder {}", player.getIpAddress(), player.getUsername(), FileUtil.getShortPath(mediaFile.getRelativePath()), mediaFile.getFolderId());
+            LOG.info("{}: {} streaming {} in folder id {}", player.getIpAddress(), player.getUsername(), FileUtil.getShortPath(mediaFile.getRelativePath()), mediaFile.getFolderId());
             mediaFileService.incrementPlayCount(mediaFile);
             scrobble(mediaFile, player, false);
             status.setMediaFile(mediaFile);

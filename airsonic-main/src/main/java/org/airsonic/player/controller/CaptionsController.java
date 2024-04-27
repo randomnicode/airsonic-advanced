@@ -255,7 +255,7 @@ public class CaptionsController {
         if ("vtt".equals(format)) {
             return new PathResource(captionsFile);
         } else {
-            return new InputStreamResource(new BOMInputStream(Files.newInputStream(captionsFile)));
+            return new InputStreamResource(BOMInputStream.builder().setInputStream(Files.newInputStream(captionsFile)).get());
         }
     }
 
@@ -268,7 +268,7 @@ public class CaptionsController {
 
         try (Stream<Path> children = Files.walk(parentPath)) {
             return children.parallel()
-                    .filter(c -> Files.isRegularFile(c))
+                    .filter(Files::isRegularFile)
                     .filter(c -> CAPTIONS_FORMATS.contains(MoreFiles.getFileExtension(c)))
                     .collect(Collectors.toList());
         } catch (IOException e) {

@@ -134,8 +134,7 @@ public class ServletConfiguration implements WebMvcConfigurer {
     @Bean
     public SimpleUrlHandlerMapping podcastMapping(PodcastController podcastController) {
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-
-        mapping.setAlwaysUseFullPath(true);
+        mapping.getUrlPathHelper().setAlwaysUseFullPath(true);
 
         Properties properties = new Properties();
         properties.put("/podcast/**", podcastController);

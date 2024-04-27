@@ -160,7 +160,7 @@ public class LeftController {
         map.put("indexes", musicFolderContent.getIndexedArtists().keySet());
         map.put("user", securityService.getCurrentUser(request));
 
-        return new ModelAndView("left","model",map);
+        return new ModelAndView("left","model", map);
     }
 
     private boolean saveSelectedMusicFolder(HttpServletRequest request) throws Exception {

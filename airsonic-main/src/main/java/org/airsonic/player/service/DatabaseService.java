@@ -37,6 +37,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -218,7 +219,7 @@ public class DatabaseService {
     }
 
     private static void truncateAll(Database db, Connection c) throws Exception {
-        String sql = TABLE_ORDER.stream().flatMap(t -> t.stream())
+        String sql = TABLE_ORDER.stream().flatMap(Collection::stream)
                 .map(t -> "delete from " + t).collect(joining("; "));
 
         CommandScope commandScope = new CommandScope(ExecuteSqlCommandStep.COMMAND_NAME);

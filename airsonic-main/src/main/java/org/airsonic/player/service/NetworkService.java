@@ -31,7 +31,6 @@ import org.springframework.web.util.UrlPathHelper;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 @Service
 public class NetworkService {
@@ -122,11 +121,7 @@ public class NetworkService {
     }
 
     private static URI calculateNonProxyUri(HttpServletRequest request) throws MalformedURLException, URISyntaxException {
-        URL url = new URL(request.getRequestURL().toString());
-        String host = url.getHost();
-        String scheme = url.getProtocol();
-        int port = url.getPort();
-        String userInfo = url.getUserInfo();
-        return new URI(scheme, userInfo, host, port, urlPathHelper.getContextPath(request), null, null);
+        URI uri = new URI(request.getRequestURL().toString()); // request.getRequestURI() only returns the path without scheme and host and port (/airsonic)
+        return new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), urlPathHelper.getContextPath(request), null, null);
     }
 }

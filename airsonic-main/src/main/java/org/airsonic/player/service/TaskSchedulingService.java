@@ -26,12 +26,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -74,19 +69,19 @@ public class TaskSchedulingService implements ScheduledTaskHolder {
 
     public void scheduleFixedDelayTask(String name, Runnable task, Instant firstTime, Duration period, boolean cancelIfExists) {
         scheduleTask(name,
-            r -> r.scheduleFixedDelayTask(new FixedDelayTask(task, period.toMillis(), ChronoUnit.MILLIS.between(Instant.now(), firstTime))),
+            r -> r.scheduleFixedDelayTask(new FixedDelayTask(task, period, Duration.between(Instant.now(), firstTime))),
             cancelIfExists);
     }
 
     public void scheduleAtFixedRate(String name, Runnable task, Instant firstTime, Duration period, boolean cancelIfExists) {
         scheduleTask(name,
-            r -> r.scheduleFixedRateTask(new FixedRateTask(task, period.toMillis(), ChronoUnit.MILLIS.between(Instant.now(), firstTime))),
+            r -> r.scheduleFixedRateTask(new FixedRateTask(task, period, Duration.between(Instant.now(), firstTime))),
             cancelIfExists);
     }
 
     public void scheduleOnce(String name, Runnable task, Instant firstTime, boolean cancelIfExists) {
         scheduleTask(name,
-            r -> r.scheduleTriggerTask(new TriggerTask(task, new RunOnceTrigger(ChronoUnit.MILLIS.between(Instant.now(), firstTime)))),
+            r -> r.scheduleTriggerTask(new TriggerTask(task, new RunOnceTrigger(Duration.between(Instant.now(), firstTime)))),
             cancelIfExists);
     }
 
@@ -107,15 +102,15 @@ public class TaskSchedulingService implements ScheduledTaskHolder {
     }
 
     public static class RunOnceTrigger extends PeriodicTrigger {
-        public RunOnceTrigger(long initialDelay) {
-            super(0);
+        public RunOnceTrigger(Duration initialDelay) {
+            super(Duration.ZERO);
             setInitialDelay(initialDelay);
         }
 
         @Override
-        public Date nextExecutionTime(TriggerContext triggerContext) {
-            if (triggerContext.lastCompletionTime() == null) { // hasn't executed yet
-                return super.nextExecutionTime(triggerContext);
+        public Instant nextExecution(TriggerContext triggerContext) {
+            if (triggerContext.lastCompletion() == null) { // hasn't executed yet
+                return super.nextExecution(triggerContext);
             }
             return null;
         }
@@ -140,20 +135,17 @@ public class TaskSchedulingService implements ScheduledTaskHolder {
         }
 
         private RunMetadata getRunMetadata(Instant created, ScheduledTask scheduledTask, Instant now) {
-            if (scheduledTask.getTask() instanceof TriggerTask) {
-                TriggerTask task = (TriggerTask) scheduledTask.getTask();
-                if (task.getTrigger() instanceof RunOnceTrigger) {
-                    RunOnceTrigger trigger = (RunOnceTrigger) task.getTrigger();
-                    Instant firstRun = created.plusMillis(trigger.getInitialDelay());
+            if (scheduledTask.getTask() instanceof TriggerTask task) {
+                if (task.getTrigger() instanceof RunOnceTrigger trigger) {
+                    Instant firstRun = created.plus(Optional.ofNullable(trigger.getInitialDelayDuration()).orElse(Duration.ZERO));
                     if (firstRun.isAfter(now)) {
                         return new RunMetadata(firstRun, null, firstRun, RunMetadata.Type.RUN_ONCE);
                     } else {
                         return new RunMetadata(firstRun, firstRun, null, RunMetadata.Type.RUN_ONCE);
                     }
                 }
-            } else if (scheduledTask.getTask() instanceof IntervalTask) {
-                IntervalTask task = (IntervalTask) scheduledTask.getTask();
-                Instant firstRun = created.plusMillis(task.getInitialDelay());
+            } else if (scheduledTask.getTask() instanceof IntervalTask task) {
+                Instant firstRun = created.plus(task.getInitialDelayDuration());
                 long millis = ChronoUnit.MILLIS.between(firstRun, now);
                 if (millis < 0) {
                     // firstRun will happen in the future

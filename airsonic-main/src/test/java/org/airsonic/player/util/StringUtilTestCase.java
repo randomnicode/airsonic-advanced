@@ -115,7 +115,7 @@ public class StringUtilTestCase extends TestCase {
     }
 
     public void testParseLocale() {
-        assertEquals("Error in parseLocale().", null, null);
+        assertNull("Error in parseLocale().", StringUtil.parseLocale(null));
         assertEquals("Error in parseLocale().", new Locale("en"), StringUtil.parseLocale("en"));
         assertEquals("Error in parseLocale().", new Locale("en"), StringUtil.parseLocale("en_"));
         assertEquals("Error in parseLocale().", new Locale("en"), StringUtil.parseLocale("en__"));
@@ -161,7 +161,7 @@ public class StringUtilTestCase extends TestCase {
         assertEquals("Error in removeMarkup()", "foobar", StringUtil.removeMarkup("<b>foo</b>bar"));
         assertEquals("Error in removeMarkup()", "foo", StringUtil.removeMarkup("foo"));
         assertEquals("Error in removeMarkup()", "foo", StringUtil.removeMarkup("<b>foo"));
-        assertEquals("Error in removeMarkup()", null, StringUtil.removeMarkup(null));
+        assertNull("Error in removeMarkup()", StringUtil.removeMarkup(null));
     }
 
 }

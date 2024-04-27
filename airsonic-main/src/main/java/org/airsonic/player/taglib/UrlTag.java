@@ -125,7 +125,7 @@ public class UrlTag extends BodyTagSupport {
             try {
                 return StringUtil.utf8HexEncode(s);
             } catch (Exception x) {
-                LOG.error("Failed to utf8hex-encode the string '" + s + "'.", x);
+                LOG.error("Failed to utf8hex-encode the string '{}'.", s, x);
                 return s;
             }
         }

@@ -155,7 +155,7 @@ public class MusicIndexService {
     private List<MusicIndex.SortableArtistWithMediaFiles> createSortableArtists(List<MusicFolder> folders, boolean refresh) {
         String[] ignoredArticles = settingsService.getIgnoredArticlesAsArray();
         String[] shortcuts = settingsService.getShortcutsAsArray();
-        SortedMap<String, MusicIndex.SortableArtistWithMediaFiles> artistMap = new TreeMap<String, MusicIndex.SortableArtistWithMediaFiles>();
+        SortedMap<String, MusicIndex.SortableArtistWithMediaFiles> artistMap = new TreeMap<>();
         Set<String> shortcutSet = new HashSet<String>(Arrays.asList(shortcuts));
         Collator collator = createCollator();
 
@@ -177,7 +177,7 @@ public class MusicIndexService {
             }
         }
 
-        return new ArrayList<MusicIndex.SortableArtistWithMediaFiles>(artistMap.values());
+        return new ArrayList<>(artistMap.values());
     }
 
     private List<MusicIndex.SortableArtistWithArtist> createSortableArtists(List<Artist> artists) {
