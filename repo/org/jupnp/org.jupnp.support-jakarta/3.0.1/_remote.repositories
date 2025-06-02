@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Wed May 01 10:33:39 PDT 2024
+org.jupnp.support-jakarta-3.0.1-sources.jar>=
+org.jupnp.support-jakarta-3.0.1.jar>=
+org.jupnp.support-jakarta-3.0.1.pom>=

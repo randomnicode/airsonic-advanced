@@ -122,14 +122,14 @@ public class ServletConfiguration implements WebMvcConfigurer {
         return new ResponseHeaderFilter();
     }
 
-    @Bean
-    public ViewResolver jspViewResolver() {
-        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-        resolver.setViewClass(JstlView.class);
-        resolver.setPrefix("/WEB-INF/jsp/");
-        resolver.setSuffix(".jsp");
-        return resolver;
-    }
+//    @Bean
+//    public ViewResolver jspViewResolver() {
+//        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+//        resolver.setViewClass(JstlView.class);
+//        resolver.setPrefix("/WEB-INF/jsp/");
+//        resolver.setSuffix(".jsp");
+//        return resolver;
+//    }
 
     @Bean
     public SimpleUrlHandlerMapping podcastMapping(PodcastController podcastController) {
